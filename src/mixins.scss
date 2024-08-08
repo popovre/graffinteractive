@@ -1,0 +1,107 @@
+//helpers
+
+@mixin listres {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@mixin inputres {
+  margin: 0;
+  padding: 0;
+
+  font: inherit;
+  color: inherit;
+
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+@mixin btnres {
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+@mixin fieldres {
+  border: 0;
+}
+
+// sass variables for mixins
+
+$desktop-width: 1440px;
+$laptop-width: 1024px;
+$tablet-width: 768px;
+$l-nobile-width: 500px;
+$m-mobile-width: 425px;
+$s-mobile-width: 375px;
+
+@mixin s-mobile-w {
+  @media (min-width: $s-mobile-width) {
+    @content;
+  }
+}
+
+@mixin m-mobile-w {
+  @media (min-width: $m-mobile-width) {
+    @content;
+  }
+}
+
+@mixin l-mobile-w {
+  @media (min-width: $l-mobile-width) {
+    @content;
+  }
+}
+
+@mixin tablet-w {
+  @media (min-width: $tablet-width) {
+    @content;
+  }
+}
+
+@mixin laptop-w {
+  @media (min-width: $laptop-width) {
+    @content;
+  }
+}
+
+@mixin desktop-w {
+  @media (min-width: $desktop-width) {
+    @content;
+  }
+}
+
+@mixin retina {
+  @media (min-resolution: 2dppx) {
+    @content;
+    background-repeat: no-repeat;
+  }
+}
+
+// custom
+@mixin content {
+  width: 100%;
+  margin: 0 auto;
+  padding-inline: var(--mobile-padding-inline);
+
+  @include tablet-w() {
+    padding-inline: var(--tablet-padding-inline);
+  }
+
+  @include laptop-w() {
+    padding-inline: var(--laptop-padding-inline);
+  }
+
+  @include desktop-w() {
+    max-width: var(--desktop-width);
+    padding-inline: var(--desktop-padding-inline);
+  }
+}
