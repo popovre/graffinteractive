@@ -1,0 +1,103 @@
+:root {
+  /* colors */
+  --default-black: #000000;
+  --black1: #141414;
+  --default-white: #ffffff;
+  --grey1: #f4f4f4;
+
+  --header-bg: rgba(245, 245, 245, 0.949);
+  --bg-home-abstract: rgba(17, 17, 17, 1);
+
+  --article-color: #fff3f3;
+
+  --bg-color: #f4f4f4;
+  --bg-color-dark: #242424;
+  --ai: #0d0c27;
+  --asc-bg-emphasis: #e5e7eb;
+  --asc-bg: #fff;
+  --asc-bg-subtle: #f3f4f6;
+  --asc-bg-muted: #f9fafb;
+  --asc-bg-inverted: #111827;
+  --asc-bg-info: #e8e3e1;
+  --asc-bg-success: #e2fbe8;
+  --asc-bg-attention: #fceed8;
+  --asc-bg-error: #f9e3e2;
+  --asc-border-emphasis: #9ca3af;
+  --asc-border: #d1d5db;
+  --asc-border-subtle: #e5e7eb;
+  --asc-border-muted: #f3f4f6;
+  --asc-text-emphasis: #111827;
+  --asc-text: #374151;
+  --asc-grey-text: #f4f4f4;
+  --asc-text-subtle: #6b7280;
+  --asc-text-card: #cecaca;
+  --asc-text-title: #f7f2f2;
+  --asc-text-muted: #9ca3af;
+  --asc-text-inverted: #fff;
+  --asc-text-info: #253985;
+  --asc-text-success: #129e31;
+  --asc-text-attention: #73321b;
+  --asc-text-error: #752522;
+  --asc-logo: #b21a1a;
+  --asc-brand: #111827;
+  --asc-brand-emphasis: #101010;
+  --asc-brand-text: #fff;
+  --asc-btn: #be5be8;
+
+  /* screen sizes */
+  --tablet-width: 768px;
+  --laptop-width: 1024px;
+  --desktop-width: 1440px;
+  --s-mobile-width: 375px;
+
+  /* paddings-inline */
+  --mobile-padding-inline: 16px;
+  --tablet-padding-inline: 32px;
+  --laptop-padding-inline: 48px;
+  --desktop-padding-inline: 70px;
+  // paddings-block
+  --mobile-padding-block: 16px;
+  --mobile-big-padding-block: 32px;
+  --tablet-padding-block: 70px;
+  --tablet-gap-block: 52px;
+  --negative-tablet-gap-block: -52px;
+  --desktop-padding-block: 90px;
+
+  // radius
+  --element-border-radius: 8px;
+  --mobile-low-border-radius: 16px;
+  --mobile-border-radius: 22px;
+  --desktop-border-radius: 32px;
+
+  --max-width: 1440px;
+  --main-font: "--font-inter", "Arial", "sans-serif";
+  --second-font: var(--main-font);
+  --third-font: "--font-robotoMono", "Arial", "sans-serif";
+
+  --min-height-header: 80px;
+
+  // fonts
+  --normal-weight: 400;
+  --middle-weight: 500;
+  --bold-weight: 700;
+
+  --line-height-normal: 1;
+  --line-height-link: 160%;
+
+  //font-size
+  --asc-min-font: 14px;
+  --asc-low-font: 18px;
+  --asc-normal-font: 20px;
+  --asc-big-font: 22px;
+  --asc-mobile-subtle-font: 32px;
+
+  --asc-title-font: 40px;
+
+  --asc-tablet-font: 30px;
+  --asc-tablet-title-font: 60px;
+
+  --asc-laptop-title-font: 72px;
+
+  --asc-laptop-title-font: 90px;
+  --asc-desktop-title-font: 100px;
+}
