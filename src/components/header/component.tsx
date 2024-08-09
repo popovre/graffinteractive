@@ -8,7 +8,7 @@ const Header = () => {
         <Link to="/">Home</Link>
         <Link to="/panel">Panel</Link>
       </nav>
-      <p>Приложение для просмотра изображений</p>
+      <p>graff.test</p>
       <Link target="_blank" to="https://www.graff.tech/">
         GRAFF interactive
       </Link>
