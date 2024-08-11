@@ -6,11 +6,13 @@ import img4 from "../../assets/images/unsplash_NoRsyXmHGpI.png"
 import img5 from "../../assets/images/unsplash_W5XTTLpk1-I.png"
 import img6 from "../../assets/images/unsplash_dC-z4r8tr6U.png"
 import img7 from "../../assets/images/unsplash_mpw37yXc_WQ.png"
-import { useState, useEffect, createContext } from "react"
+import { useState, useEffect } from "react"
+import SlidesList from "../slides-list/component"
+import Arrows from "../arrows/component"
+import Dots from "../dots/component"
+import { SliderContext } from "../../context/slider"
 
 const images = [img1, img2, img3, img4, img5, img6, img7]
-
-export const SliderContext = createContext()
 
 const getImages = async (time = 1000) => {
   let promise = new Promise((res, rej) => {
@@ -41,6 +43,7 @@ const Slider = (
   }, [])
 
   const changeSlide = (direction = 1) => {
+    console.log(direction, "change slide")
     let slideNumber = 0
 
     if (slide + direction < 0) {
@@ -48,11 +51,12 @@ const Slider = (
     } else {
       slideNumber = (slide + direction) % items.length
     }
-
+    console.log(slideNumber, "slideNumber")
     setSlide(slideNumber)
   }
 
   const goToSlide = number => {
+    console.log(number, "go to slide")
     setSlide(number % items.length)
   }
 
@@ -69,28 +73,28 @@ const Slider = (
     const currentPosition = evt.touches[0].clientX
     const direction = touchPosition - currentPosition
 
-    if (direction > 10) {
+    if (direction > 7) {
       changeSlide(1)
     }
 
-    if (direction < -10) {
+    if (direction < -7) {
       changeSlide(-1)
     }
 
     setTouchPosition(null)
   }
 
-  useEffect(() => {
-    if (!autoPlay) return
+  // useEffect(() => {
+  //   if (autoPlay) {
+  //     const interval = setInterval(() => {
+  //       changeSlide(1)
+  //     }, autoPlayTime)
+  //   }
 
-    const interval = setInterval(() => {
-      changeSlide(1)
-    }, autoPlayTime)
-
-    return () => {
-      clearInterval(interval)
-    }
-  }, [items.length, slide])
+  //   return () => {
+  //     clearInterval(interval)
+  //   }
+  // }, [items.length, slide])
 
   return (
     <div
@@ -108,18 +112,9 @@ const Slider = (
           items,
         }}
       >
-        <button type="button">swipe left</button>
-        <div>
-          {items &&
-            items.map(image => (
-              <img
-                className={styles.visibleImage}
-                alt="flower"
-                src={image}
-              ></img>
-            ))}
-        </div>
-        <button type="button">swipe right</button>
+        <Arrows />
+        <SlidesList />
+        <Dots />
       </SliderContext.Provider>
     </div>
   )

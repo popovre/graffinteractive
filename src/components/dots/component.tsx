@@ -1,11 +1,11 @@
 import { useContext } from "react"
-import { SliderContext } from "../slider/component"
-import Dot from "./Dot"
-
-import "../../styles.scss"
+import Dot from "../dot/component"
+import { SliderContext } from "../../context/slider"
+import styles from "./style.module.scss"
 
 export default function Dots() {
   const { slidesCount } = useContext(SliderContext)
+  console.log(slidesCount, "slidesCount")
 
   const renderDots = () => {
     const dots = []
@@ -16,5 +16,5 @@ export default function Dots() {
     return dots
   }
 
-  return <div className="dots">{renderDots()}</div>
+  return <div className={styles.root}>{renderDots()}</div>
 }

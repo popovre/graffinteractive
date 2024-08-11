@@ -1,8 +1,10 @@
-export default function Slide({ data: { url, title } }) {
+import styles from "./style.module.scss"
+
+export default function Slide({ data }) {
   return (
-    <div className="slide">
-      <div className="slide-title">{title}</div>
-      <img src={url} alt={title} className="slide-image" />;
+    <div className={styles.root}>
+      <div className={styles.slideTitle}>{"title"}</div>
+      <img src={data} alt={"title"} className={styles.slideImage} />
     </div>
   )
 }
