@@ -1,0 +1,53 @@
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  padding: 16px;
+  font-size: 18px;
+}
+
+.window {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  flex-grow: 1;
+  padding: 16px;
+  padding-left: 36px;
+
+  font-size: 14px;
+  color: var(--asc-text-emphasis);
+  line-height: 130%;
+}
+
+.span {
+  border-radius: 10px;
+  border-bottom-left-radius: 0;
+  background-color: #e2eaf1;
+  padding-inline: 8px;
+  padding-block: 12px;
+}
+
+.label {
+  display: flex;
+  justify-content: space-between;
+  height: 50px;
+
+  padding-right: 12px;
+}
+
+.input {
+  @include inputres;
+  flex-grow: 1;
+  padding-inline: 16px;
+  padding-block: 14px;
+}
+
+.buttonSubmit {
+  @include btnres;
+  width: 24px;
+  height: 24px;
+  align-self: center;
+}

@@ -24,12 +24,7 @@ const getImages = async (time = 1000) => {
   return promise
 }
 
-const Slider = (
-  autoPlay = false,
-  autoPlayTime = 5000,
-  width = "100%",
-  height = "100%",
-) => {
+const Slider = (width = "100%", height = "100%") => {
   const [items, setItems] = useState([])
   const [slide, setSlide] = useState(0)
   const [touchPosition, setTouchPosition] = useState(null)

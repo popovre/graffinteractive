@@ -4,11 +4,10 @@ import styles from "./style.module.scss"
 
 export default function Dot({ number }) {
   const { goToSlide, slideNumber } = useContext(SliderContext)
-  console.log(slideNumber, "slideNumber")
 
   return (
     <div
-      className={`${styles.root} ${slideNumber === number ? styles.selected : ""}`}
+      className={`${styles.root} ${slideNumber === number && styles.selected}`}
       onClick={() => {
         goToSlide(number)
       }}
