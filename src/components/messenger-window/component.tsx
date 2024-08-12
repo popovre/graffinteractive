@@ -1,26 +1,49 @@
 import styles from "./style.module.scss"
 import Tg from "../../assets/icons/tg.svg?react"
 
+const messages = [
+  {
+    input: true,
+    name: "КЕ",
+    message: "Информативное сообщение с просьбой, в две строки",
+  },
+  {
+    input: true,
+    name: "КЕ",
+    message: "Информативное сообщение с просьбой, в две строки",
+  },
+
+  {
+    input: false,
+    name: "ИФ",
+    message: "Информативное сообщение с просьбой, в две строки",
+  },
+  {
+    input: false,
+    name: "ИФ",
+    message: "Информативное сообщение с просьбой, в две строки",
+  },
+  {
+    input: true,
+    name: "КЕ",
+    message: "Информативное сообщение с просьбой, в две строки",
+  },
+]
+
 const MessengerWindow = () => {
   return (
     <div className={styles.root}>
       <h2 className={styles.title}>Чат с поддержкой</h2>
       <div className={styles.window}>
-        <p className={styles.span}>
-          Информативное сообщение с просьбой, в две строки
-        </p>
-        <p className={styles.span}>
-          Информативное сообщение с просьбой, в две строки
-        </p>
-        <p className={styles.span}>
-          Информативное сообщение с просьбой, в две строки
-        </p>
-        <p className={styles.span}>
-          Информативное сообщение с просьбой, в две строки
-        </p>
-        <p className={styles.span}>
-          Информативное сообщение с просьбой, в две строки
-        </p>
+        {messages.map(({ input, name, message }, index, array) => {
+          return (
+            <p
+              className={`${styles.message} ${input && styles.gotMessage} ${array[index - 1]?.input !== input && styles.topMargin}`}
+            >
+              {message} <span>{name}</span>
+            </p>
+          )
+        })}
       </div>
       <label className={styles.label}>
         <input
@@ -29,7 +52,7 @@ const MessengerWindow = () => {
           type="text"
         />
         <button className={styles.buttonSubmit} type="button">
-          <Tg />
+          <Tg className={styles.tg} />
         </button>
       </label>
     </div>
