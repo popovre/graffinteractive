@@ -5,7 +5,6 @@ import styles from "./style.module.scss"
 
 export default function Dots() {
   const { slidesCount } = useContext(SliderContext)
-  console.log(slidesCount, "slidesCount")
 
   const renderDots = () => {
     const dots = []

@@ -1,6 +1,7 @@
 import { useContext } from "react"
 import { SliderContext } from "../../context/slider"
 import styles from "./style.module.scss"
+import Arrow from "../../assets/icons/arrow.svg?react"
 
 export default function Arrows() {
   const { changeSlide } = useContext(SliderContext)
@@ -8,20 +9,20 @@ export default function Arrows() {
   return (
     <div className={styles.root}>
       <div
-        className={(styles.left, styles.arrow)}
+        className={styles.iconWrapper}
         onClick={() => {
           changeSlide(-1)
         }}
       >
-        Лево
+        <Arrow className={(styles.arrow, styles.arrowLeft)} />
       </div>
       <div
-        className={(styles.right, styles.arrow)}
+        className={styles.iconWrapper}
         onClick={() => {
           changeSlide(1)
         }}
       >
-        Право
+        <Arrow className={(styles.arrow, styles.arrowRight)} />
       </div>
     </div>
   )

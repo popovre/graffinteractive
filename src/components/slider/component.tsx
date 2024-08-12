@@ -51,12 +51,10 @@ const Slider = (
     } else {
       slideNumber = (slide + direction) % items.length
     }
-    console.log(slideNumber, "slideNumber")
     setSlide(slideNumber)
   }
 
   const goToSlide = number => {
-    console.log(number, "go to slide")
     setSlide(number % items.length)
   }
 
@@ -83,18 +81,6 @@ const Slider = (
 
     setTouchPosition(null)
   }
-
-  // useEffect(() => {
-  //   if (autoPlay) {
-  //     const interval = setInterval(() => {
-  //       changeSlide(1)
-  //     }, autoPlayTime)
-  //   }
-
-  //   return () => {
-  //     clearInterval(interval)
-  //   }
-  // }, [items.length, slide])
 
   return (
     <div
