@@ -1,0 +1,35 @@
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 60px;
+  padding-right: 12px;
+  padding-block: 14px;
+
+  font-size: 14px;
+
+  & span {
+    position: absolute;
+
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #3c3939;
+
+    left: 12px;
+    bottom: 12px;
+  }
+}
+
+.message {
+  color: #777b8c;
+}
