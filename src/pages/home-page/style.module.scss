@@ -2,4 +2,5 @@
   @include content;
   display: grid;
   grid-template-columns: 1fr 360px;
+  min-height: 80vh;
 }

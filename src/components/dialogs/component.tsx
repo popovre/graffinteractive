@@ -26,8 +26,8 @@ const dialogs = [
 const Dialogs = () => {
   return (
     <div className={styles.root}>
-      {dialogs.map(({ name, message }) => (
-        <div className={styles.dialog}>
+      {dialogs.map(({ name, message }, index) => (
+        <div className={styles.dialog} key={index}>
           <span>
             {name
               ?.split(" ")

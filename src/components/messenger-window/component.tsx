@@ -39,8 +39,10 @@ const MessengerWindow = () => {
           return (
             <p
               className={`${styles.message} ${input && styles.gotMessage} ${array[index - 1]?.input !== input && styles.topMargin}`}
+              key={index}
             >
-              {message} <span>{name}</span>
+              {message}
+              {array[index + 1]?.input !== input && <span>{name}</span>}
             </p>
           )
         })}
@@ -50,7 +52,7 @@ const MessengerWindow = () => {
           className={styles.input}
           placeholder="Написать сообщение..."
           type="text"
-        />
+        ></input>
         <button className={styles.buttonSubmit} type="button">
           <Tg className={styles.tg} />
         </button>
