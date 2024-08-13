@@ -15,5 +15,9 @@ export default function Dots() {
     return dots
   }
 
-  return <div className={styles.root}>{renderDots()}</div>
+  return (
+    <div className={styles.root}>
+      <div className={styles.dotsWrapper}>{renderDots()}</div>
+    </div>
+  )
 }
