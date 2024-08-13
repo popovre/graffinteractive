@@ -17,7 +17,7 @@
   --asc-bg: #fff;
   --asc-bg-subtle: #f3f4f6;
   --asc-bg-muted: #f9fafb;
-  --asc-bg-inverted: #111827;
+  --asc-bg-inverted: #e6e9f1;
   --asc-bg-info: #e8e3e1;
   --asc-bg-success: #e2fbe8;
   --asc-bg-attention: #fceed8;
@@ -43,6 +43,11 @@
   --asc-brand-emphasis: #101010;
   --asc-brand-text: #fff;
   --asc-btn: #be5be8;
+  --asc-selected-field: #111827;
+  --asc-hovered-field: #ebecf2;
+  --asc-bg-span: #b1b1fd;
+  --asc-message-text: #777b8c;
+  --asc-icon-hovered: #798fff;
 
   /* screen sizes */
   --tablet-width: 768px;
@@ -90,14 +95,10 @@
   --asc-normal-font: 20px;
   --asc-big-font: 22px;
   --asc-mobile-subtle-font: 32px;
-
   --asc-title-font: 40px;
-
   --asc-tablet-font: 30px;
   --asc-tablet-title-font: 60px;
-
   --asc-laptop-title-font: 72px;
-
   --asc-laptop-title-font: 90px;
   --asc-desktop-title-font: 100px;
 }

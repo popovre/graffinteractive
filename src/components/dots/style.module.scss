@@ -1,0 +1,18 @@
+.root {
+  padding: 20px 0;
+  position: absolute;
+  width: 100%;
+  z-index: 2;
+  bottom: 0;
+
+  display: flex;
+  justify-content: center;
+}
+
+.dotsWrapper {
+  display: flex;
+  justify-content: center;
+  background-color: #2424244b;
+  padding: 1rem;
+  border-radius: var(--mobile-border-radius);
+}
