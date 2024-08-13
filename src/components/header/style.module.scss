@@ -1,13 +1,12 @@
 .root {
   @include content;
 
-  @include desktop-w {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    padding-block: var(--mobile-padding-block);
-  }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-block: var(--mobile-padding-block);
 }
 
 .nav {

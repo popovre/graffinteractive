@@ -52,7 +52,7 @@ const MessengerWindow = () => {
           className={styles.input}
           placeholder="Написать сообщение..."
           type="text"
-        ></input>
+        />
         <button className={styles.buttonSubmit} type="button">
           <Tg className={styles.tg} />
         </button>
