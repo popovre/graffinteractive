@@ -5,17 +5,17 @@ const Header = () => {
   return (
     <div className={styles.root}>
       <nav className={styles.nav}>
-        <NavLink className={styles.link} to="/">
+        <NavLink className={styles.link} to="/user">
           {({ isActive }) => (
             <button className={styles.button} disabled={isActive}>
-              Home
+              User
             </button>
           )}
         </NavLink>
-        <NavLink className={styles.link} to="/panel">
+        <NavLink className={styles.link} to="/manager">
           {({ isActive }) => (
             <button className={styles.button} disabled={isActive}>
-              Panel
+              Manager
             </button>
           )}
         </NavLink>
@@ -26,16 +26,6 @@ const Header = () => {
       </Link>
     </div>
   )
-}
-
-{
-  /* <NavLink to="menu">
-{({ isActive }) => (
-  <button className={classNames(styles.button)} disabled={isActive}>
-    Menu
-  </button>
-)}
-</NavLink> */
 }
 
 export default Header

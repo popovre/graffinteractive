@@ -1,0 +1,29 @@
+.root {
+  display: flex;
+  // height: 100%;
+  margin: 100px auto;
+}
+
+.root::after {
+  font-size: 18px;
+  color: #333;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.root::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-top-color: #333;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
