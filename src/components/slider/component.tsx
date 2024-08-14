@@ -11,6 +11,7 @@ import SlidesList from "../slides-list/component"
 import Arrows from "../arrows/component"
 import Dots from "../dots/component"
 import { SliderContext } from "../../context/slider"
+import { useLocation, useParams } from "react-router-dom"
 
 const images = [img1, img2, img3, img4, img5, img6, img7]
 
@@ -29,6 +30,9 @@ const Slider = (width = "100%", height = "100%") => {
   const [slide, setSlide] = useState(0)
   const [touchPosition, setTouchPosition] = useState(null)
 
+  const param = useLocation()
+  console.log(param, "param")
+
   useEffect(() => {
     const loadData = async () => {
       const images = await getImages()
@@ -37,8 +41,9 @@ const Slider = (width = "100%", height = "100%") => {
     loadData()
   }, [])
 
+  useEffect(() => {}, [])
+
   const changeSlide = (direction = 1) => {
-    console.log(direction, "change slide")
     let slideNumber = 0
 
     if (slide + direction < 0) {
@@ -66,11 +71,11 @@ const Slider = (width = "100%", height = "100%") => {
     const currentPosition = evt.touches[0].clientX
     const direction = touchPosition - currentPosition
 
-    if (direction > 7) {
+    if (direction > items.length) {
       changeSlide(1)
     }
 
-    if (direction < -7) {
+    if (direction < -items.length) {
       changeSlide(-1)
     }
 
