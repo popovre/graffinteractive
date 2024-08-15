@@ -11,47 +11,63 @@ import SlidesList from "../slides-list/component"
 import Arrows from "../arrows/component"
 import Dots from "../dots/component"
 import { SliderContext } from "../../context/slider"
-import { useLocation, useParams } from "react-router-dom"
 
-const images = [img1, img2, img3, img4, img5, img6, img7]
+// const images = [img1, img2, img3, img4, img5, img6, img7]
 
-const getImages = async (time = 1000) => {
-  let promise = new Promise((res, rej) => {
-    setTimeout(() => {
-      res(images)
-    }, time)
-  })
+// const getImages = async (time = 1000) => {
+//   let promise = new Promise((res, rej) => {
+//     setTimeout(() => {
+//       res(images)
+//     }, time)
+//   })
 
-  return promise
-}
+//   return promise
+// }
 
 const Slider = (width = "100%", height = "100%") => {
   const [items, setItems] = useState([])
   const [slide, setSlide] = useState(0)
   const [touchPosition, setTouchPosition] = useState(null)
-
-  const param = useLocation()
-  console.log(param, "param")
+  const [loading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const loadData = async () => {
-      const images = await getImages()
-      setItems(images)
+      const data = await fetch(`http://localhost:3001/api/slides`)
+      const slides = await data.json()
+      console.log(slides, "slides")
+      setItems([...slides])
     }
     loadData()
   }, [])
 
-  useEffect(() => {}, [])
-
-  const changeSlide = (direction = 1) => {
-    let slideNumber = 0
-
-    if (slide + direction < 0) {
-      slideNumber = items.length - 1
-    } else {
-      slideNumber = (slide + direction) % items.length
+  const fetchSlide = async slide => {
+    setIsLoading(true)
+    const slideNumber = slide
+    try {
+      const response = await fetch(`http://localhost:3001/api/${slideNumber}`)
+      const newImage = response.json()
+      setItems([...images, newImage])
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
     }
-    setSlide(slideNumber)
+  }
+
+  const changeSlide = async (direction = 1) => {
+    let nextSlideNumber = slide + direction
+
+    if (nextSlideNumber < 0) {
+      nextSlideNumber = items.length - 1
+    }
+    // else if (nextSlideNumber >= items.length) {
+    //   await fetchSlide(nextSlideNumber)
+    //   setSlide(nextSlideNumber)
+    // }
+    else {
+      nextSlideNumber = nextSlideNumber % items.length
+    }
+    setSlide(nextSlideNumber)
   }
 
   const goToSlide = number => {

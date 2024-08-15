@@ -1,9 +1,9 @@
 import styles from "./style.module.scss"
 
-export default function Slide({ data }) {
+export default function Slide({ slide }) {
   return (
     <div className={styles.root}>
-      <img src={data} alt={"title"} className={styles.slideImage} />
+      <img src={slide.src} alt={slide.alt} className={styles.slideImage} />
     </div>
   )
 }
