@@ -3,35 +3,6 @@ import Tg from "../../assets/icons/tg.svg?react"
 import { useEffect, useRef, useState } from "react"
 import { useLocation } from "react-router-dom"
 
-// const messages = [
-//   {
-//     input: true,
-//     name: "КЕ",
-//     message: "Информативное сообщение с просьбой, в две строки",
-//   },
-//   {
-//     input: true,
-//     name: "КЕ",
-//     message: "Информативное сообщение с просьбой, в две строки",
-//   },
-
-//   {
-//     input: false,
-//     name: "ИФ",
-//     message: "Информативное сообщение с просьбой, в две строки",
-//   },
-//   {
-//     input: false,
-//     name: "ИФ",
-//     message: "Информативное сообщение с просьбой, в две строки",
-//   },
-//   {
-//     input: true,
-//     name: "КЕ",
-//     message: "Информативное сообщение с просьбой, в две строки",
-//   },
-// ]
-
 const PORT = 5000
 const BASE_QUERY = `ws://localhost:${PORT}/`
 
@@ -43,10 +14,8 @@ const MessengerWindow = ({ client }) => {
   const windowRef = useRef()
 
   const clientId = useLocation()
-  console.log(chat, "chat")
 
   const chatHandler = msg => {
-    console.log(msg, "chatHandler")
     setChat([
       ...chat,
       { input: msg.input, message: msg.message, name: msg.name },

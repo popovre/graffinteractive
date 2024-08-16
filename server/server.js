@@ -63,7 +63,6 @@ const connectionHandler = (ws, msg) => {
 
 const broadcastConnection = (ws, msg) => {
   aWss.clients.forEach(client => {
-    // console.log(client.id, "client id", msg.id, "msg.id")
     // if (client.id === msg.id) {
     console.log("i send", msg)
     client.send(JSON.stringify(msg))
