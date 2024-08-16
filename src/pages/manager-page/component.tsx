@@ -2,13 +2,13 @@ import Dialogs from "../../components/dialogs/component"
 import MessengerWindow from "../../components/messenger-window/component"
 import styles from "./style.module.scss"
 
-const PanelPage = () => {
+const ManagerPage = () => {
   return (
     <div className={styles.root}>
       <Dialogs />
-      <MessengerWindow />
+      <MessengerWindow client={"manager"} />
     </div>
   )
 }
 
-export default PanelPage
+export default ManagerPage

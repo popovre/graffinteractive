@@ -1,6 +1,6 @@
 import Layout from "./components/layout/component"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import PanelPage from "./pages/panel-page/component"
+import ManagerPage from "./pages/manager-page/component"
 import UserPage from "./pages/user-page/component"
 import ErrorPage from "./pages/error-page/component"
 
@@ -16,7 +16,11 @@ const router = createBrowserRouter([
         element: <UserPage />,
         errorElement: <ErrorPage />,
       },
-      { path: "manager", element: <PanelPage />, errorElement: <ErrorPage /> },
+      {
+        path: "manager",
+        element: <ManagerPage />,
+        errorElement: <ErrorPage />,
+      },
     ],
   },
 ])

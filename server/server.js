@@ -1,13 +1,16 @@
 const express = require("express")
 const api = require("./api")
-const app = express()
+
 const bodyParser = require("body-parser")
 
-const WSServer = require("express-ws")(app)
+const app = express()
+const appWS = express()
+
+const WSServer = require("express-ws")(appWS)
 const aWss = WSServer.getWss()
 
-const PORT_WS = process.env.PORT || 5000
 const PORT_HTTP = 3001
+const PORT_WS = process.env.PORT || 5000
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*")
@@ -27,34 +30,45 @@ app.listen(PORT_HTTP, "localhost", function (err) {
     return
   }
 
-  console.log("Listening at http://localhost:" + PORT_HTTP)
+  console.log("Listening HTTP at http://localhost:" + PORT_HTTP)
 })
 
-// app.ws("/", (ws, req) => {
-//   console.log("Connection completed")
-//   ws.send("You succesfully connected")
-//   ws.on("message", msg => {
-//     msg = JSON.parse(msg)
-//     switch (msg.method) {
-//       case "connection": {
-//         connectionHandler(ws, msg)
-//         break
-//       }
-//     }
-//   })
-// })
+// TODO: make WS server
 
-// const connectionHandler = (ws, msg) => {
-//   ws.id = msg.id
-//   broadcastConnection(ws, msg)
-// }
+appWS.use(express.json())
 
-// const broadcastConnection = (ws, msg) => {
-//   aWss.clients.forEach(client => {
-//     if (client.id === msg.id) {
-//       client.send("user", `${client.userName} connected`)
-//     }
-//   })
-// }
+appWS.ws("/", (ws, req) => {
+  console.log("Connection WS completed")
 
-// app.listen(PORT_WS, () => console.log(`server started on PORT ${PORT_WS}`))
+  ws.on("message", msg => {
+    msg = JSON.parse(msg)
+    switch (msg.method) {
+      case "connection": {
+        connectionHandler(ws, msg)
+        break
+      }
+      case "chat": {
+        broadcastConnection(ws, msg)
+        break
+      }
+    }
+  })
+})
+
+const connectionHandler = (ws, msg) => {
+  ws.id = msg.id
+  console.log(ws.id, "ws")
+  broadcastConnection(ws, msg)
+}
+
+const broadcastConnection = (ws, msg) => {
+  aWss.clients.forEach(client => {
+    // if (client.id === msg.id) {
+    client.send(JSON.stringify(msg))
+    // }
+  })
+}
+
+appWS.listen(PORT_WS, () =>
+  console.log(`Listening WS at ws://localhost: ${PORT_WS}`),
+)

@@ -1,27 +1,15 @@
-# vite-template-redux
+Приложение для общения и просмотра изображений.
 
-Uses [Vite](https://vitejs.dev/), [Vitest](https://vitest.dev/), and [React Testing Library](https://github.com/testing-library/react-testing-library) to create a modern [React](https://react.dev/) app compatible with [Create React App](https://create-react-app.dev/)
+Запустить приложение нужно в следующем порядке:
 
-```sh
-npx degit reduxjs/redux-templates/packages/vite-template-redux my-app
-```
-
-## Goals
-
-- Easy migration from Create React App or Vite
-- As beginner friendly as Create React App
-- Optimized performance compared to Create React App
-- Customizable without ejecting
-
-## Scripts
-
-- `dev`/`start` - start dev server and open browser
-- `build` - build for production
-- `preview` - locally preview production build
-- `test` - launch test runner
-
-## Inspiration
-
-- [Create React App](https://github.com/facebook/create-react-app/tree/main/packages/cra-template)
-- [Vite](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react)
-- [Vitest](https://github.com/vitest-dev/vitest/tree/main/examples/react-testing-lib)
+1. Для запуска приложения - открыть терминал ~graffinteractive
+   Выполнить в консоли:
+   git checkout master
+   pnpm i
+   pnpm run dev
+2. Для запуска сервера - открыть второй терминал ~graffinteractive
+   Выполнить в консоли:
+   cd server//
+   pnpm i
+   cd ..
+   pnpm start-server
