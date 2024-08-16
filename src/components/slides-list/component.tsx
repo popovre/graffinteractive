@@ -12,7 +12,7 @@ export default function SlidesList() {
       style={{ transform: `translateX(-${slideNumber * 100}%)` }}
     >
       {items.map((slide, index) => (
-        <Slide key={index} data={slide} />
+        <Slide key={index} slide={slide} />
       ))}
     </div>
   )

@@ -2,7 +2,7 @@ import MessengerWindow from "../../components/messenger-window/component"
 import Slider from "../../components/slider/component"
 import styles from "./style.module.scss"
 
-const HomePage = () => {
+const UserPage = () => {
   return (
     <div className={styles.root}>
       <Slider />
@@ -11,4 +11,4 @@ const HomePage = () => {
   )
 }
 
-export default HomePage
+export default UserPage

@@ -13,3 +13,15 @@
   display: flex;
   gap: 1rem;
 }
+
+.link {
+  padding: 0;
+  background-color: var(--asc-text-success);
+}
+
+.button {
+  background-color: var(--asc-text-success);
+  &:disabled {
+    opacity: 0.3;
+  }
+}
