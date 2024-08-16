@@ -5,8 +5,9 @@ const readDir = dir => {
   try {
     // dec array
     const fileNames = fs.readdirSync("./server/assets/images")
-    const images = fileNames.map(name => {
+    const images = fileNames.map((name, index) => {
       return {
+        id: index,
         src: `${dir}/${name}`,
         title: name,
         alt: `image: ${name.slice(0, -4)}`,
@@ -20,7 +21,6 @@ const readDir = dir => {
 }
 
 const slides = readDir(imagesDir)
-console.log(slides, "slides")
 
 module.exports = {
   slides,

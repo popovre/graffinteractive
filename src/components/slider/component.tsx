@@ -1,52 +1,39 @@
 import styles from "./style.module.scss"
-import img1 from "../../assets/images/unsplash_7AcMUSYRZpU.png"
-import img2 from "../../assets/images/unsplash_DpphPG9ENsI.png"
-import img3 from "../../assets/images/unsplash_Cx949d6dIFI.png"
-import img4 from "../../assets/images/unsplash_NoRsyXmHGpI.png"
-import img5 from "../../assets/images/unsplash_W5XTTLpk1-I.png"
-import img6 from "../../assets/images/unsplash_dC-z4r8tr6U.png"
-import img7 from "../../assets/images/unsplash_mpw37yXc_WQ.png"
 import { useState, useEffect } from "react"
 import SlidesList from "../slides-list/component"
 import Arrows from "../arrows/component"
 import Dots from "../dots/component"
 import { SliderContext } from "../../context/slider"
+import Loader from "../loader/component"
 
-// const images = [img1, img2, img3, img4, img5, img6, img7]
-
-// const getImages = async (time = 1000) => {
-//   let promise = new Promise((res, rej) => {
-//     setTimeout(() => {
-//       res(images)
-//     }, time)
-//   })
-
-//   return promise
-// }
+const BASE_QUERY = "http://localhost:3001/api/slides"
 
 const Slider = (width = "100%", height = "100%") => {
   const [items, setItems] = useState([])
   const [slide, setSlide] = useState(0)
-  const [touchPosition, setTouchPosition] = useState(null)
   const [loading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const loadData = async () => {
-      const data = await fetch(`http://localhost:3001/api/slides`)
-      const slides = await data.json()
-      console.log(slides, "slides")
-      setItems([...slides])
+      setIsLoading(true)
+      try {
+        const data = await fetch(`${BASE_QUERY}/${slide}`)
+        const startSlide = await data.json()
+        setItems([startSlide])
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setIsLoading(false)
+      }
     }
     loadData()
   }, [])
 
-  const fetchSlide = async slide => {
+  const fetchSlide = async nextSlide => {
     setIsLoading(true)
-    const slideNumber = slide
     try {
-      const response = await fetch(`http://localhost:3001/api/${slideNumber}`)
-      const newImage = response.json()
-      setItems([...images, newImage])
+      const response = await fetch(`${BASE_QUERY}/${nextSlide}`)
+      return await response.json()
     } catch (error) {
       console.log(error)
     } finally {
@@ -55,65 +42,36 @@ const Slider = (width = "100%", height = "100%") => {
   }
 
   const changeSlide = async (direction = 1) => {
-    let nextSlideNumber = slide + direction
+    let nextSlide = slide + direction
 
-    if (nextSlideNumber < 0) {
-      nextSlideNumber = items.length - 1
+    if (nextSlide < 0) {
+      nextSlide = items.length - 1
+    } else if (nextSlide >= items.length) {
+      const newSlide = await fetchSlide(nextSlide)
+      newSlide?.lastIndex ? (nextSlide = 0) : setItems([...items, newSlide])
+    } else {
+      nextSlide = nextSlide % items.length
     }
-    // else if (nextSlideNumber >= items.length) {
-    //   await fetchSlide(nextSlideNumber)
-    //   setSlide(nextSlideNumber)
-    // }
-    else {
-      nextSlideNumber = nextSlideNumber % items.length
-    }
-    setSlide(nextSlideNumber)
+    setSlide(nextSlide)
   }
 
   const goToSlide = number => {
     setSlide(number % items.length)
   }
 
-  const handleTouchStart = evt => {
-    const touchDown = evt.touches[0].clientX
-    setTouchPosition(touchDown)
-  }
-
-  const handleTouchMove = evt => {
-    if (touchPosition === null) {
-      return
-    }
-
-    const currentPosition = evt.touches[0].clientX
-    const direction = touchPosition - currentPosition
-
-    if (direction > items.length) {
-      changeSlide(1)
-    }
-
-    if (direction < -items.length) {
-      changeSlide(-1)
-    }
-
-    setTouchPosition(null)
-  }
-
   return (
-    <div
-      className={styles.root}
-      style={{ width, height }}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-    >
+    <div className={styles.root} style={{ width, height }}>
       <SliderContext.Provider
         value={{
           goToSlide,
           changeSlide,
           slidesCount: items.length,
           slideNumber: slide,
+          loading,
           items,
         }}
       >
+        {loading && <Loader />}
         <Arrows />
         <SlidesList />
         <Dots />

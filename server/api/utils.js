@@ -5,6 +5,8 @@ const reply = (res, body, timeout = 1000, status = 200) =>
 
 const getById = entities => id => entities.find(entity => entity.id === id)
 
+const getByIndex = entities => index => entities[index]
+
 const updateById = entities => (id, data) => {
   const index = entities.findIndex(entity => entity.id === id)
   entities[index] = { ...entities[index], ...data }
@@ -12,4 +14,4 @@ const updateById = entities => (id, data) => {
   return entities[index]
 }
 
-module.exports = { reply, getById, updateById }
+module.exports = { reply, getById, updateById, getByIndex }
