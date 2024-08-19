@@ -10,14 +10,15 @@ const MessengerWindow = ({ client }) => {
   const [socketState, setSocketState] = useState()
   const [chat, setChat] = useState([])
   const [members, setMembers] = useState("")
+  const [message, setMessage] = useState("")
   const inputRef = useRef()
   const windowRef = useRef()
 
   const clientId = useLocation()
 
   const chatHandler = msg => {
-    setChat([
-      ...chat,
+    setChat(prevMessages => [
+      ...prevMessages,
       { input: msg.input, message: msg.message, name: msg.name },
     ])
   }
@@ -28,12 +29,12 @@ const MessengerWindow = ({ client }) => {
         method: "chat",
         input: false,
         name: clientId.pathname === "/client" ? "C C" : "M M",
-        message: inputRef.current?.value || "empty",
+        message: message || "empty",
         id: clientId.pathname,
       }),
     )
 
-    inputRef.current.value = ""
+    setMessage("")
   }
 
   useEffect(() => {
@@ -83,7 +84,9 @@ const MessengerWindow = ({ client }) => {
         <input
           ref={inputRef}
           className={styles.input}
+          onChange={evt => setMessage(evt.target.value)}
           placeholder="Написать сообщение..."
+          value={message}
           type="text"
         />
         <button
