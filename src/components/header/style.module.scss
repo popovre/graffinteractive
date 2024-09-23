@@ -1,12 +1,11 @@
 .root {
-  @include content;
-
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
 
   padding-block: var(--mobile-padding-block);
+  @include content;
 }
 
 .nav {
