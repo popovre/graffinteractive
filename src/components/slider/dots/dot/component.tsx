@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { SliderContext } from "../../context/slider"
+import { SliderContext } from "../../../../context/slider"
 import styles from "./style.module.scss"
 
 export default function Dot({ number }) {

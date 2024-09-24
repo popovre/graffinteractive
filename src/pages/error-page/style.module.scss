@@ -1,9 +1,9 @@
 .root {
-  @include content;
   padding-block: 5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   row-gap: 2rem;
   min-height: 80vh;
+  @include content;
 }

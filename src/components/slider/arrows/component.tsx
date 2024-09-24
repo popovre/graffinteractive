@@ -1,7 +1,7 @@
 import { useContext } from "react"
-import { SliderContext } from "../../context/slider"
+import { SliderContext } from "../../../context/slider"
 import styles from "./style.module.scss"
-import Arrow from "../../assets/icons/arrow.svg?react"
+import Arrow from "../../../assets/icons/arrow.svg?react"
 
 export default function Arrows() {
   const { changeSlide } = useContext(SliderContext)

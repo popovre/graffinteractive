@@ -5,7 +5,7 @@ import styles from "./style.module.scss"
 const UserPage = () => {
   return (
     <div className={styles.root}>
-      <Slider width={"100%"} height={"100%"} />
+      <Slider />
       <MessengerWindow client={"user"} />
     </div>
   )

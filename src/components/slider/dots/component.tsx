@@ -1,6 +1,6 @@
 import { useContext } from "react"
-import Dot from "../dot/component"
-import { SliderContext } from "../../context/slider"
+import Dot from "./dot/component"
+import { SliderContext } from "../../../context/slider"
 import styles from "./style.module.scss"
 
 export default function Dots() {

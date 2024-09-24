@@ -1,33 +1,38 @@
 import styles from "./style.module.scss"
 import { useState, useEffect } from "react"
-import SlidesList from "../slides-list/component"
-import Arrows from "../arrows/component"
-import Dots from "../dots/component"
+import SlidesList from "./slides-list/component"
+import Arrows from "./arrows/component"
+import Dots from "./dots/component"
 import { SliderContext } from "../../context/slider"
 import Loader from "../loader/component"
+import { useFetchData } from "./use-fetch-slide"
 
+//TODO: как вынести все константы в отдельный файл и собирать его в проект? Заметки от Максима
 const BASE_QUERY = "http://localhost:3001/api/slides"
 
-const Slider = (width = "100%", height = "100%") => {
+const Slider = () => {
   const [items, setItems] = useState([])
   const [slide, setSlide] = useState(0)
-  const [loading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true)
-      try {
-        const data = await fetch(`${BASE_QUERY}/${slide}`)
-        const startSlide = await data.json()
-        setItems([startSlide])
-      } catch (error) {
-        console.log(error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    loadData()
-  }, [])
+  const [initialSlide, loading, error] = useFetchData(`${BASE_QUERY}/${slide}`)
+
+  // useEffect(() => {
+  //   console.log("slider effect")
+  //   const loadData = async () => {
+  //     setIsLoading(true)
+  //     try {
+  //       const data = await fetch(`${BASE_QUERY}/${slide}`)
+  //       const startSlide = await data.json()
+  //       setItems([startSlide])
+  //     } catch (error) {
+  //       console.log(error)
+  //     } finally {
+  //       setIsLoading(false)
+  //     }
+  //   }
+  //   loadData()
+  // }, [])
 
   const fetchSlide = async nextSlide => {
     setIsLoading(true)
@@ -60,18 +65,18 @@ const Slider = (width = "100%", height = "100%") => {
   }
 
   return (
-    <div className={styles.root} style={{ width, height }}>
+    <div className={styles.root}>
       <SliderContext.Provider
         value={{
           goToSlide,
           changeSlide,
           slidesCount: items.length,
           slideNumber: slide,
-          loading,
+          loading: isLoading,
           items,
         }}
       >
-        {loading && <Loader />}
+        {isLoading && <Loader />}
         <Arrows />
         <SlidesList />
         <Dots />

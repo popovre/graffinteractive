@@ -1,6 +1,6 @@
 import { useContext } from "react"
-import Slide from "../slide/component"
-import { SliderContext } from "../../context/slider"
+import Slide from "./slide/component"
+import { SliderContext } from "../../../context/slider"
 import styles from "./style.module.scss"
 
 export default function SlidesList() {
