@@ -6,6 +6,7 @@ import Dots from "./dots/component"
 import { SliderContext } from "../../context/slider"
 import Loader from "../loader/component"
 import { useFetchData } from "./use-fetch-slide"
+//TODO: я понял что рендерить промис нельзя, однако в моей задаче согласно принципам DRY надо возвращать промис, но обрабатывать его в Эффектах, в противном случае асинхронные события я не обработаю. Если же вовращается не промис, то я не могу его передать в стэйт компонента, ибо данные изменяются с null to object, но я не могу отследить изменения
 
 //TODO: как вынести все константы в отдельный файл и собирать его в проект? Заметки от Максима
 const BASE_QUERY = "http://localhost:3001/api/slides"
