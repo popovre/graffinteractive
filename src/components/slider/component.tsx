@@ -12,27 +12,24 @@ const BASE_QUERY = "http://localhost:3001/api/slides"
 
 const Slider = () => {
   const [items, setItems] = useState([])
-  const [slide, setSlide] = useState(0)
+  const [slideIndex, setSlideIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
 
-  const [initialSlide, loading, error] = useFetchData(`${BASE_QUERY}/${slide}`)
-
-  // useEffect(() => {
-  //   console.log("slider effect")
-  //   const loadData = async () => {
-  //     setIsLoading(true)
-  //     try {
-  //       const data = await fetch(`${BASE_QUERY}/${slide}`)
-  //       const startSlide = await data.json()
-  //       setItems([startSlide])
-  //     } catch (error) {
-  //       console.log(error)
-  //     } finally {
-  //       setIsLoading(false)
-  //     }
-  //   }
-  //   loadData()
-  // }, [])
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true)
+      try {
+        const data = await fetch(`${BASE_QUERY}/${slideIndex}`)
+        const startSlide = await data.json()
+        setItems([startSlide])
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
 
   const fetchSlide = async nextSlide => {
     setIsLoading(true)
@@ -47,7 +44,7 @@ const Slider = () => {
   }
 
   const changeSlide = async (direction = 1) => {
-    let nextSlide = slide + direction
+    let nextSlide = slideIndex + direction
 
     if (nextSlide < 0) {
       nextSlide = items.length - 1
@@ -57,11 +54,11 @@ const Slider = () => {
     } else {
       nextSlide = nextSlide % items.length
     }
-    setSlide(nextSlide)
+    setSlideIndex(nextSlide)
   }
 
   const goToSlide = number => {
-    setSlide(number % items.length)
+    setSlideIndex(number % items.length)
   }
 
   return (
@@ -71,7 +68,7 @@ const Slider = () => {
           goToSlide,
           changeSlide,
           slidesCount: items.length,
-          slideNumber: slide,
+          slideNumber: slideIndex,
           loading: isLoading,
           items,
         }}
