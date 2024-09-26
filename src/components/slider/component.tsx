@@ -8,29 +8,37 @@ import Loader from "../loader/component"
 import { useFetchData } from "./use-fetch-slide"
 //TODO: я понял что рендерить промис нельзя, однако в моей задаче согласно принципам DRY надо возвращать промис, но обрабатывать его в Эффектах, в противном случае асинхронные события я не обработаю. Если же вовращается не промис, то я не могу его передать в стэйт компонента, ибо данные изменяются с null to object, но я не могу отследить изменения
 
-//TODO: как вынести все константы в отдельный файл и собирать его в проект? Заметки от Максима
-const BASE_QUERY = "http://localhost:3001/api/slides"
-
 const Slider = () => {
   const [items, setItems] = useState([])
   const [slideIndex, setSlideIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
+  //TODO: как вынести все константы в отдельный файл и собирать его в проект? Заметки от Максима
+  const BASE_QUERY = "http://localhost:3001/api/slides"
+  const url = `${BASE_QUERY}/${slideIndex}`
+
+  const [data, initLoading, error] = useFetchData(url)
 
   useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true)
-      try {
-        const data = await fetch(`${BASE_QUERY}/${slideIndex}`)
-        const startSlide = await data.json()
-        setItems([startSlide])
-      } catch (error) {
-        console.log(error)
-      } finally {
-        setIsLoading(false)
-      }
+    if (data && slideIndex === 0) {
+      setItems([data])
     }
-    loadData()
-  }, [])
+  }, [data, slideIndex])
+
+  // useEffect(() => {
+  //   const loadData = async () => {
+  //     setIsLoading(true)
+  //     try {
+  //       const data = await fetch(`${BASE_QUERY}/${slideIndex}`)
+  //       const startSlide = await data.json()
+  //       setItems([startSlide])
+  //     } catch (error) {
+  //       console.log(error)
+  //     } finally {
+  //       setIsLoading(false)
+  //     }
+  //   }
+  //   loadData()
+  // }, [])
 
   const fetchSlide = async nextSlide => {
     setIsLoading(true)
