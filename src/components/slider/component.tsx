@@ -5,69 +5,43 @@ import Arrows from "./arrows/component"
 import Dots from "./dots/component"
 import { SliderContext } from "../../context/slider"
 import Loader from "../loader/component"
-import { useFetchData } from "./use-fetch-slide"
-//TODO: я понял что рендерить промис нельзя, однако в моей задаче согласно принципам DRY надо возвращать промис, но обрабатывать его в Эффектах, в противном случае асинхронные события я не обработаю. Если же вовращается не промис, то я не могу его передать в стэйт компонента, ибо данные изменяются с null to object, но я не могу отследить изменения
+import { useFetchData } from "./use-fetch-data"
+//TODO: я понял что рендерить промис можно, достаточно передать ему в аргумент колэк и внутри колбека записывать данные в стэйт значение resolve
 
 const Slider = () => {
-  const [items, setItems] = useState([])
-  const [slideIndex, setSlideIndex] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
   //TODO: как вынести все константы в отдельный файл и собирать его в проект? Заметки от Максима
   const BASE_QUERY = "http://localhost:3001/api/slides"
-  const url = `${BASE_QUERY}/${slideIndex}`
+  const [slides, setSlides] = useState([])
+  const [slideIndex, setSlideIndex] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+  const [url, setUrl] = useState(`${BASE_QUERY}/${slideIndex}`)
 
-  const [data, initLoading, error] = useFetchData(url)
-
-  useEffect(() => {
-    if (data && slideIndex === 0) {
-      setItems([data])
-    }
-  }, [data, slideIndex])
-
-  // useEffect(() => {
-  //   const loadData = async () => {
-  //     setIsLoading(true)
-  //     try {
-  //       const data = await fetch(`${BASE_QUERY}/${slideIndex}`)
-  //       const startSlide = await data.json()
-  //       setItems([startSlide])
-  //     } catch (error) {
-  //       console.log(error)
-  //     } finally {
-  //       setIsLoading(false)
-  //     }
-  //   }
-  //   loadData()
-  // }, [])
+  const [data, initLoading, error] = useFetchData(url, fetchedData => {
+    //TODO: вынести в отдельную функцию, допилить запрос последнего слайда
+    fetchedData.lastIndex
+      ? setSlideIndex(0)
+      : setSlides([...slides, fetchedData])
+  })
 
   const fetchSlide = async nextSlide => {
-    setIsLoading(true)
-    try {
-      const response = await fetch(`${BASE_QUERY}/${nextSlide}`)
-      return await response.json()
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setIsLoading(false)
-    }
+    setUrl(`${BASE_QUERY}/${nextSlide}`)
   }
 
   const changeSlide = async (direction = 1) => {
     let nextSlide = slideIndex + direction
 
     if (nextSlide < 0) {
-      nextSlide = items.length - 1
-    } else if (nextSlide >= items.length) {
-      const newSlide = await fetchSlide(nextSlide)
-      newSlide?.lastIndex ? (nextSlide = 0) : setItems([...items, newSlide])
+      nextSlide = slides.length - 1
+    } else if (nextSlide >= slides.length) {
+      fetchSlide(nextSlide)
     } else {
-      nextSlide = nextSlide % items.length
+      nextSlide = nextSlide % slides.length
     }
     setSlideIndex(nextSlide)
   }
 
   const goToSlide = number => {
-    setSlideIndex(number % items.length)
+    setSlideIndex(number % slides.length)
   }
 
   return (
@@ -76,13 +50,13 @@ const Slider = () => {
         value={{
           goToSlide,
           changeSlide,
-          slidesCount: items.length,
+          slidesCount: slides.length,
           slideNumber: slideIndex,
           loading: isLoading,
-          items,
+          items: slides,
         }}
       >
-        {isLoading && <Loader />}
+        {(isLoading || initLoading) && <Loader />}
         <Arrows />
         <SlidesList />
         <Dots />
