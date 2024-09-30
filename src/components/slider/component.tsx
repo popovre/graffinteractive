@@ -15,13 +15,15 @@ const Slider = () => {
   const [slideIndex, setSlideIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [url, setUrl] = useState(`${BASE_QUERY}/${slideIndex}`)
+  console.log(slides, "slides")
 
-  const [data, initLoading, error] = useFetchData(url, fetchedData => {
-    //TODO: вынести в отдельную функцию, допилить запрос последнего слайда
+  const handleFetchedData = fetchedData => {
     fetchedData.lastIndex
       ? setSlideIndex(0)
       : setSlides([...slides, fetchedData])
-  })
+  }
+
+  const [data, initLoading, error] = useFetchData(url, handleFetchedData)
 
   const fetchSlide = async nextSlide => {
     setUrl(`${BASE_QUERY}/${nextSlide}`)
@@ -32,7 +34,7 @@ const Slider = () => {
 
     if (nextSlide < 0) {
       nextSlide = slides.length - 1
-    } else if (nextSlide >= slides.length) {
+    } else if (nextSlide === slides.length) {
       fetchSlide(nextSlide)
     } else {
       nextSlide = nextSlide % slides.length
