@@ -18,11 +18,9 @@ const Slider = () => {
   console.log(slides, "slides", slideIndex)
 
   const handleFetchedData = fetchedData => {
-    if (fetchedData.lastIndex) {
-      setSlideIndex(0)
-      return
-    }
-    setSlides([...slides, fetchedData])
+    fetchedData.lastIndex
+      ? setSlideIndex(0)
+      : setSlides([...slides, fetchedData])
   }
 
   const [data, initLoading, error] = useFetchData(url, handleFetchedData)
