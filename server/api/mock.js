@@ -8,6 +8,7 @@ const readDir = dir => {
     const images = fileNames.map((name, index) => {
       return {
         id: index,
+        lastIndex: index === fileNames.length - 1,
         src: `${dir}/${name}`,
         title: name,
         alt: `image: ${name.slice(0, -4)}`,

@@ -15,12 +15,15 @@ const Slider = () => {
   const [slideIndex, setSlideIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [url, setUrl] = useState(`${BASE_QUERY}/${slideIndex}`)
-  console.log(slides, "slides", slideIndex)
+
+  const isDuplicatedSlide = fetchdedData =>
+    slides.find(slide => slide.id === fetchdedData.id) !== undefined
 
   const handleFetchedData = fetchedData => {
-    fetchedData.lastIndex
-      ? setSlideIndex(0)
-      : setSlides([...slides, fetchedData])
+    if (!isDuplicatedSlide(fetchedData)) {
+      setSlides([...slides, fetchedData])
+      setSlideIndex(slides.length)
+    }
   }
 
   const [data, initLoading, error] = useFetchData(url, handleFetchedData)
@@ -34,13 +37,13 @@ const Slider = () => {
 
     if (nextSlide < 0) {
       nextSlide = slides.length - 1
+      setSlideIndex(nextSlide)
     } else if (nextSlide === slides.length) {
-      console.log(nextSlide === slides.length, "nextSlide === slides.length")
-      fetchSlide(nextSlide)
+      slides[slideIndex]?.lastIndex ? setSlideIndex(0) : fetchSlide(nextSlide)
     } else {
       nextSlide = nextSlide % slides.length
+      setSlideIndex(nextSlide)
     }
-    setSlideIndex(nextSlide)
   }
 
   const goToSlide = number => {
