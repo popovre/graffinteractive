@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-export const useFetchData = (url, callback, dependence) => {
+export const useFetchData = (url, callback) => {
   let controller = new AbortController()
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
