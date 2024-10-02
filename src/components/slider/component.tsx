@@ -19,14 +19,14 @@ const Slider = () => {
   const isDuplicatedSlide = fetchdedData =>
     slides.find(slide => slide.id === fetchdedData.id) !== undefined
 
-  const handleFetchedData = fetchedData => {
+  const handleData = fetchedData => {
     if (!isDuplicatedSlide(fetchedData)) {
       setSlides([...slides, fetchedData])
       setSlideIndex(slides.length)
     }
   }
 
-  const [data, initLoading, error] = useFetchData(url, handleFetchedData)
+  const [data, initLoading, error] = useFetchData(url, handleData)
 
   const fetchSlide = async nextSlide => {
     setUrl(`${BASE_QUERY}/${nextSlide}`)
