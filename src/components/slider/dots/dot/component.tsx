@@ -1,16 +1,19 @@
-import { useContext } from "react"
+import { memo, useContext } from "react"
 import { SliderContext } from "../../../../context/slider"
 import styles from "./style.module.scss"
 
-export default function Dot({ number }) {
-  const { goToSlide, slideIndex } = useContext(SliderContext)
+const Dot = memo(function Dot({ index, isActive }) {
+  console.log("dot render")
+  const { goToSlide } = useContext(SliderContext)
 
   return (
     <div
-      className={`${styles.root} ${slideIndex === number && styles.selected}`}
+      className={`${styles.root} ${isActive && styles.selected}`}
       onClick={() => {
-        goToSlide(number)
+        goToSlide(index)
       }}
     />
   )
-}
+})
+
+export default Dot

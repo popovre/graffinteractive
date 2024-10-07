@@ -1,11 +1,8 @@
-import { useContext } from "react"
-import { SliderContext } from "../../../context/slider"
 import styles from "./style.module.scss"
 import Arrow from "../../../assets/icons/arrow.svg?react"
+import { memo } from "react"
 
-export default function Arrows() {
-  const { changeSlide } = useContext(SliderContext)
-
+const Arrows = memo(function Arrows({ changeSlide }) {
   return (
     <div className={styles.root}>
       <div
@@ -26,4 +23,6 @@ export default function Arrows() {
       </div>
     </div>
   )
-}
+})
+
+export default Arrows

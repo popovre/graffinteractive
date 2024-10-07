@@ -1,9 +1,9 @@
 import { SliderContext } from "../../../context/slider"
 import Slide from "./slide/component"
 import styles from "./style.module.scss"
-import { useContext } from "react"
+import { memo, useContext } from "react"
 
-export default function SlidesList({ slides }) {
+const SlidesList = memo(function SlidesList({ slides }) {
   const { slideIndex } = useContext(SliderContext)
   return (
     <div
@@ -11,8 +11,10 @@ export default function SlidesList({ slides }) {
       style={{ transform: `translateX(-${slideIndex * 100}%)` }}
     >
       {slides.map((slide, index) => (
-        <Slide key={index} slide={slide} />
+        <Slide key={`key-${slide.id}`} slide={slide} />
       ))}
     </div>
   )
-}
+})
+
+export default SlidesList
