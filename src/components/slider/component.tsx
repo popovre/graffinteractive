@@ -11,18 +11,14 @@ import { useFetchData } from "./use-fetch-data"
 import { BASE_QUERY } from "../../constants"
 
 const Slider = () => {
-  //TODO: как вынести все константы в отдельный файл и собирать его в проект? Заметки от Максима
   const [slides, setSlides] = useState([])
   const [slideIndex, setSlideIndex] = useState(0)
   const [url, setUrl] = useState(`${BASE_QUERY}/${slideIndex}`)
-
-  // console.log("slider render")
 
   const isDuplicatedSlide = fetchdedData =>
     slides.find(slide => slide.id === fetchdedData.id) !== undefined
 
   const handleData = fetchedData => {
-    // console.log("handle")
     if (!isDuplicatedSlide(fetchedData)) {
       setSlides([...slides, fetchedData])
       setSlideIndex(slides.length)

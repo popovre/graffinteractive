@@ -3,7 +3,6 @@ import { SliderContext } from "../../../../context/slider"
 import styles from "./style.module.scss"
 
 const Dot = memo(function Dot({ index, isActive }) {
-  console.log("dot render")
   const { goToSlide } = useContext(SliderContext)
 
   return (
