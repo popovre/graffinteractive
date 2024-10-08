@@ -2,7 +2,13 @@ import styles from "./style.module.scss"
 import Arrow from "../../../assets/icons/arrow.svg?react"
 import { memo } from "react"
 
-const Arrows = memo(function Arrows({ changeSlide }) {
+type direction = -1 | 1
+
+export interface ArrowsProps {
+  changeSlide: (direction: direction) => void
+}
+
+const Arrows = memo(function Arrows({ changeSlide }: ArrowsProps) {
   return (
     <div className={styles.root}>
       <div

@@ -1,7 +1,19 @@
 import { memo } from "react"
 import styles from "./style.module.scss"
 
-const Slide = memo(function Slide({ slide }) {
+export interface slide {
+  alt: string
+  id: number
+  lastIndex: boolean
+  src: string
+  title: string
+}
+
+export interface SlideProps {
+  slide: slide
+}
+
+const Slide: React.FC<SlideProps> = memo(function Slide({ slide }) {
   console.log("slide render")
   return (
     <div className={styles.root}>

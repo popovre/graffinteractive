@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react"
+import type { slide } from "./slides-list/slide/component"
 
-export const useFetchData = (url, callback) => {
+export const useFetchData = (
+  url: string,
+  callback: (respData: slide) => void,
+) => {
   let controller = new AbortController()
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(false)

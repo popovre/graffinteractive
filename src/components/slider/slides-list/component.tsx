@@ -3,7 +3,15 @@ import Slide from "./slide/component"
 import styles from "./style.module.scss"
 import { memo, useContext } from "react"
 
-const SlidesList = memo(function SlidesList({ slides }) {
+import type { slide } from "./slide/component"
+
+export interface SlidesListProps {
+  slides: slide[]
+}
+
+const SlidesList: React.FC<SlidesListProps> = memo(function SlidesList({
+  slides,
+}) {
   const { slideIndex } = useContext(SliderContext)
   return (
     <div

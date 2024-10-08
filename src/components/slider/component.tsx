@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from "react"
-import { memo } from "react"
+import { useCallback, useState } from "react"
+
+import type { slide } from "./slides-list/slide/component"
 
 import styles from "./style.module.scss"
 import SlidesList from "./slides-list/component"
@@ -10,15 +11,17 @@ import Loader from "../loader/component"
 import { useFetchData } from "./use-fetch-data"
 import { BASE_QUERY } from "../../constants"
 
+export type slides = slide[]
+
 const Slider = () => {
-  const [slides, setSlides] = useState([])
+  const [slides, setSlides] = useState<slides>([])
   const [slideIndex, setSlideIndex] = useState(0)
   const [url, setUrl] = useState(`${BASE_QUERY}/${slideIndex}`)
 
-  const isDuplicatedSlide = fetchdedData =>
-    slides.find(slide => slide.id === fetchdedData.id) !== undefined
+  const isDuplicatedSlide = (fetchdedData: slide): boolean =>
+    slides.find((slide: slide) => slide.id === fetchdedData.id) !== undefined
 
-  const handleData = fetchedData => {
+  const handleData = (fetchedData: slide): void => {
     if (!isDuplicatedSlide(fetchedData)) {
       setSlides([...slides, fetchedData])
       setSlideIndex(slides.length)
@@ -27,7 +30,7 @@ const Slider = () => {
 
   const [data, initLoading, error] = useFetchData(url, handleData)
 
-  const fetchSlide = nextSlide => {
+  const fetchSlide = (nextSlide: number) => {
     setUrl(`${BASE_QUERY}/${nextSlide}`)
   }
 
@@ -50,7 +53,7 @@ const Slider = () => {
   )
 
   const goToSlide = useCallback(
-    index => {
+    (index: number) => {
       setSlideIndex(index % slides.length)
     },
     [slides],

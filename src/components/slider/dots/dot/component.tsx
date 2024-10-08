@@ -2,7 +2,12 @@ import { memo, useContext } from "react"
 import { SliderContext } from "../../../../context/slider"
 import styles from "./style.module.scss"
 
-const Dot = memo(function Dot({ index, isActive }) {
+export interface DotProps {
+  index: number
+  isActive: boolean
+}
+
+const Dot: React.FC<DotProps> = memo(function Dot({ index, isActive }) {
   const { goToSlide } = useContext(SliderContext)
 
   return (
