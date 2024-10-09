@@ -1,3 +1,10 @@
 import { createContext } from "react"
 
-export const SliderContext = createContext(null)
+export interface ISliderContext {
+  goToSlide?: (index: number) => void
+  slideIndex: number
+}
+
+export const SliderContext = createContext<ISliderContext>({
+  slideIndex: 0,
+})

@@ -5,7 +5,7 @@ import { memo, useContext } from "react"
 
 import type { slide } from "./slide/component"
 
-export interface SlidesListProps {
+interface SlidesListProps {
   slides: slide[]
 }
 

@@ -28,7 +28,7 @@ const Slider = () => {
     }
   }
 
-  const [data, initLoading, error] = useFetchData(url, handleData)
+  const [, initLoading] = useFetchData(url, handleData)
 
   const fetchSlide = (nextSlide: number) => {
     setUrl(`${BASE_QUERY}/${nextSlide}`)
