@@ -20,6 +20,7 @@ export const useFetchData = (
         callback(respData)
       })
       .catch(e => {
+        console.error(e)
         setError(e)
       })
       .finally(() => {

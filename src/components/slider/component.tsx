@@ -10,6 +10,7 @@ import { SliderContext } from "../../context/slider"
 import Loader from "../loader/component"
 import { useFetchData } from "./use-fetch-data"
 import { BASE_QUERY } from "../../constants"
+import ErrorComponent from "../error-component/component"
 
 export type slides = slide[]
 
@@ -28,7 +29,7 @@ const Slider = () => {
     }
   }
 
-  const [, initLoading] = useFetchData(url, handleData)
+  const [, initLoading, error] = useFetchData(url, handleData)
 
   const fetchSlide = (nextSlide: number) => {
     setUrl(`${BASE_QUERY}/${nextSlide}`)
@@ -52,6 +53,18 @@ const Slider = () => {
     [slideIndex, slides],
   )
 
+  const handleError = () => {
+    if (slideIndex !== 0 && slides[0]) {
+      setSlideIndex(0)
+      return
+    } else if (slideIndex !== 0) {
+      fetchSlide(0)
+      setSlideIndex(0)
+      return
+    }
+    fetchSlide(1)
+  }
+
   const goToSlide = useCallback(
     (index: number) => {
       setSlideIndex(index % slides.length)
@@ -68,6 +81,7 @@ const Slider = () => {
         }}
       >
         {initLoading && <Loader />}
+        {error && <ErrorComponent onClick={handleError} />}
         <Arrows changeSlide={changeSlide} />
         <SlidesList slides={slides} />
         <Dots slides={slides} slideIndex={slideIndex} />

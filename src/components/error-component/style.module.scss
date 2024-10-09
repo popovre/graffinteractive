@@ -1,0 +1,21 @@
+.root {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  background-color: #bbb9b9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: rgb(209, 30, 24);
+  font-size: var(--asc-medium-font);
+  padding: 1rem;
+  border-radius: var(--mobile-low-border-radius);
+  row-gap: 1rem;
+}
+
+.button {
+  color: var(--asc-text-card);
+  background-color: var(--asc-text-success);
+}
