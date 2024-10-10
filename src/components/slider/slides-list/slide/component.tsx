@@ -14,7 +14,6 @@ export interface SlideProps {
 }
 
 const Slide: React.FC<SlideProps> = memo(function Slide({ slide }) {
-  console.log("slide render")
   return (
     <div className={styles.root}>
       <img src={slide?.src} alt={slide?.alt} className={styles.slideImage} />

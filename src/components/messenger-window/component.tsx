@@ -6,12 +6,15 @@ import { useLocation } from "react-router-dom"
 const PORT = 5000
 const BASE_QUERY = `ws://localhost:${PORT}/`
 
-const MessengerWindow = ({ client }) => {
+export interface MessengerWindowProps {
+  client: string
+}
+
+const MessengerWindow = ({ client }: MessengerWindowProps) => {
   const [socketState, setSocketState] = useState()
   const [chat, setChat] = useState([])
   const [members, setMembers] = useState("")
   const [message, setMessage] = useState("")
-  const inputRef = useRef()
   const windowRef = useRef()
 
   const clientId = useLocation()
@@ -80,25 +83,27 @@ const MessengerWindow = ({ client }) => {
           )
         })}
       </div>
-      <label className={styles.label}>
-        <input
-          ref={inputRef}
-          className={styles.input}
-          onChange={evt => setMessage(evt.target.value)}
-          placeholder="Написать сообщение..."
-          value={message}
-          type="text"
-        />
-        <button
-          className={styles.buttonSubmit}
-          onClick={() => {
-            chatButtonHandler(socketState)
-          }}
-          type="button"
-        >
-          <Tg className={styles.tg} />
-        </button>
-      </label>
+      <form
+        name="chat"
+        onSubmit={evt => {
+          evt.preventDefault()
+          chatButtonHandler(socketState)
+          console.log("submit")
+        }}
+      >
+        <label className={styles.label}>
+          <input
+            className={styles.input}
+            onChange={evt => setMessage(evt.target.value)}
+            placeholder="Написать сообщение..."
+            value={message}
+            type="text"
+          />
+          <button className={styles.buttonSubmit} type="submit">
+            <Tg className={styles.tg} />
+          </button>
+        </label>
+      </form>
     </div>
   )
 }

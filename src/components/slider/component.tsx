@@ -45,7 +45,6 @@ const Slider = () => {
   const changeSlide = useCallback(
     (direction = 1) => {
       let nextSlide = slideIndex + direction
-      console.log(nextSlide, "nextSlide first")
 
       if (nextSlide < 0) {
         nextSlide = slides.length - 1
@@ -56,7 +55,6 @@ const Slider = () => {
         return
       }
       nextSlide = nextSlide % slides.length
-      console.log(nextSlide, "nextSlide")
       setSlideIndex(nextSlide)
     },
     [slideIndex, slides],

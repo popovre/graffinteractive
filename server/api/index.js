@@ -1,7 +1,6 @@
 const router = require("express").Router()
-const { nanoid } = require("nanoid")
 const { slides } = require("./mock")
-const { reply, getById, updateById, getByIndex } = require("./utils")
+const { reply, getByIndex } = require("./utils")
 
 router.get("/slides", (req, res, next) => {
   console.log("request")
