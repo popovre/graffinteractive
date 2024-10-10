@@ -4,11 +4,17 @@ import type { slide } from "./slides-list/slide/component"
 export const useFetchData = (
   url: string,
   callback: (respData: slide) => void,
+  slideIndex: number,
+  refresh?: boolean,
 ) => {
   let controller = new AbortController()
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+
+  useEffect(() => {
+    setError(null)
+  }, [slideIndex])
 
   useEffect(() => {
     setIsLoading(true)
@@ -29,7 +35,7 @@ export const useFetchData = (
     return () => {
       controller.abort()
     }
-  }, [url])
+  }, [url, refresh])
 
   return [data, isLoading, error]
 }
