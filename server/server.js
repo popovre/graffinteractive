@@ -4,13 +4,8 @@ const api = require("./api")
 const bodyParser = require("body-parser")
 
 const app = express()
-const appWS = express()
-
-const WSServer = require("express-ws")(appWS)
-const aWss = WSServer.getWss()
 
 const PORT_HTTP = 3001
-const PORT_WS = process.env.PORT || 5000
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*")
@@ -34,38 +29,46 @@ app.listen(PORT_HTTP, "localhost", function (err) {
 })
 
 // TODO: make WS server
+const appWS = express()
+const WSServer = require("express-ws")(appWS)
+
+const aWss = WSServer.getWss()
+const PORT_WS = process.env.PORT || 5000
 
 appWS.use(express.json())
 
 appWS.ws("/", (ws, req) => {
   console.log("Connection WS completed")
+  ws.id = Date.now()
 
   ws.on("message", msg => {
     msg = JSON.parse(msg)
+    console.log(msg, "msg")
     switch (msg.method) {
       case "connection": {
-        connectionHandler(ws, msg)
+        // connectionHandler(ws, msg)
+        broadcastConnection(ws, msg)
         break
       }
       case "chat": {
         broadcastConnection(ws, msg)
         break
       }
+      default: {
+        console.log("default case")
+      }
     }
   })
 })
 
-const connectionHandler = (ws, msg) => {
-  ws.id = msg.id
-  console.log(ws.id, "ws")
-  broadcastConnection(ws, msg)
-}
+// const connectionHandler = (ws, msg) => {
+//   ws.id = msg.id
+//   broadcastConnection(ws, msg)
+// }
 
 const broadcastConnection = (ws, msg) => {
   aWss.clients.forEach(client => {
-    // if (client.id === msg.id) {
     client.send(JSON.stringify(msg))
-    // }
   })
 }
 

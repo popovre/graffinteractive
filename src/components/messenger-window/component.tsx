@@ -11,72 +11,97 @@ export interface MessengerWindowProps {
 }
 
 const MessengerWindow = ({ client }: MessengerWindowProps) => {
-  const [socketState, setSocketState] = useState()
   const [chat, setChat] = useState([])
-  const [members, setMembers] = useState("")
   const [message, setMessage] = useState("")
-  const windowRef = useRef()
+  const [connected, setConnected] = useState(false)
+  const [username, setUsername] = useState("")
+  const socketRef = useRef()
 
   const clientId = useLocation()
 
-  const chatHandler = msg => {
-    setChat(prevMessages => [
-      ...prevMessages,
-      { input: msg.input, message: msg.message, name: msg.name },
-    ])
-  }
-
-  const chatButtonHandler = socket => {
-    socket.send(
-      JSON.stringify({
-        method: "chat",
-        input: false,
-        name: clientId.pathname === "/client" ? "C C" : "M M",
-        message: message || "empty",
-        id: clientId.pathname,
-      }),
-    )
+  const sentMessage = () => {
+    const msg = {
+      method: "chat",
+      name: username,
+      message: message,
+      id: Date.now(),
+    }
+    socketRef.current.send(JSON.stringify(msg))
 
     setMessage("")
   }
 
-  useEffect(() => {
-    const socket = new WebSocket(BASE_QUERY)
-    setSocketState(socket)
-    socket.onopen = () => {
-      console.log("WS connection completed")
-      socket.send(
-        JSON.stringify({ id: clientId.pathname, method: "connection" }),
-      )
-      socket.onmessage = evt => {
-        let msg = JSON.parse(evt.data)
-        console.log(msg, "msg")
+  const connect = () => {
+    socketRef.current = new WebSocket(BASE_QUERY)
 
-        switch (msg.method) {
-          case "connection": {
-            console.log(`user connected`, msg.id, clientId.pathname)
-            if (msg.id !== clientId.pathname) setMembers(msg.id)
-            break
-          }
-          case "chat": {
-            console.log("chat")
-            chatHandler(msg)
-            break
-          }
-        }
+    const id = Date.now()
+
+    // setSocketState(socket)
+    socketRef.current.onopen = () => {
+      setConnected(true)
+
+      const msg = {
+        name: username,
+        id,
+        method: "connection",
       }
+
+      socketRef.current.send(JSON.stringify(msg))
     }
-  }, [clientId.pathname])
+
+    socketRef.current.onmessage = evt => {
+      console.log("ws message")
+      const msg = JSON.parse(evt.data)
+      setChat(prev => [msg, ...prev])
+    }
+
+    socketRef.current.onclose = () => {
+      console.log("ws close")
+    }
+
+    socketRef.current.onerror = () => {
+      console.log("ws error")
+    }
+  }
+
+  if (!connected) {
+    return (
+      <div className={styles.login}>
+        <form
+          onSubmit={evt => {
+            evt.preventDefault()
+            connect()
+          }}
+        >
+          <input
+            type="text"
+            value={username}
+            onChange={evt => {
+              setUsername(evt.target.value)
+            }}
+            placeholder="введите ваше имя"
+          />
+          <button type="submit">войти</button>
+        </form>
+      </div>
+    )
+  }
+
   return (
     <div className={styles.root}>
-      <h2 className={styles.title}>Чат с {members}</h2>
-      <div className={styles.window} ref={windowRef}>
-        {chat.map(({ input, name, message }, index, array) => {
-          return (
+      <h2 className={styles.title}>Чат с</h2>
+      <div className={styles.window}>
+        {chat.map(({ input, name, message, method, id }, index, array) => {
+          return method === "connection" ? (
+            <p className={styles.message} key={id}>
+              {`Пользователь ${name} подключился`}
+            </p>
+          ) : (
             <p
               className={`${styles.message} ${input && styles.gotMessage} ${array[index - 1]?.input !== input && styles.topMargin}`}
-              key={index}
+              key={id}
             >
+              {name + `:`}
               {message}
               {array[index + 1]?.input !== input && <span>{name}</span>}
             </p>
@@ -87,7 +112,7 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
         name="chat"
         onSubmit={evt => {
           evt.preventDefault()
-          chatButtonHandler(socketState)
+          sentMessage()
           console.log("submit")
         }}
       >
