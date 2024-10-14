@@ -1,30 +1,28 @@
-const fs = require("node:fs")
-const imagesDir = "../server/assets/images"
+const fs = require('node:fs');
+const imagesDir = '../server/assets/images';
 
-console.log("mock 3")
-
-const readDir = dir => {
+const readDir = (dir: string) => {
   try {
     // dec array
-    const fileNames = fs.readdirSync(dir)
-    const images = fileNames.map((name, index) => {
+    const fileNames = fs.readdirSync(dir);
+    console.log(fileNames);
+    const images = fileNames.map((name: string, index: number) => {
+      const imagePath = `${dir}/${name}`;
+      const imageBuffer = fs.readFileSync(imagePath);
+      const imageBase64 = imageBuffer.toString('base64');
       return {
         id: index,
         lastIndex: index === fileNames.length - 1,
-        src: `${dir}/${name}`,
+        src: `data:image/png;base64,${imageBase64}`,
         title: name,
         alt: `image: ${name.slice(0, -4)}`,
-      }
-    })
+      };
+    });
 
-    return images
+    return images;
   } catch (err) {
-    console.log(err, "error")
+    console.log(err, 'error');
   }
-}
+};
 
-const slides = readDir(imagesDir)
-
-module.exports = {
-  slides,
-}
+export const slides = readDir(imagesDir);
