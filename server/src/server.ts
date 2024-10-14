@@ -69,7 +69,6 @@ appWS.ws('/', (ws: WebSocketWithId, req: WebSocketMessage) => {
       switch (parsedMsg.method) {
         case 'connection': {
           console.log('fag');
-          // connectionHandler(ws, msg)
           broadcastConnection(ws, msg);
           break;
         }

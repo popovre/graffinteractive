@@ -33,5 +33,3 @@ export const updateById =
 
     return entities[index];
   };
-
-// module.exports = { reply, getById, updateById, getByIndex }

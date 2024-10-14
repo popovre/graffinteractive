@@ -3,9 +3,7 @@ const imagesDir = '../server/assets/images';
 
 const readDir = (dir: string) => {
   try {
-    // dec array
     const fileNames = fs.readdirSync(dir);
-    console.log(fileNames);
     const images = fileNames.map((name: string, index: number) => {
       const imagePath = `${dir}/${name}`;
       const imageBuffer = fs.readFileSync(imagePath);
