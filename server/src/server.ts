@@ -1,3 +1,5 @@
+import type { RequestHandler } from "express"
+
 const express = require("express")
 const api = require("./api")
 
@@ -7,7 +9,7 @@ const app = express()
 
 const PORT_HTTP = 3001
 
-app.use(function (req, res, next) {
+const sliderRequestHandler: RequestHandler = (req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*")
   res.header("Access-Control-Allow-Methods", "*")
   res.header(
@@ -15,7 +17,10 @@ app.use(function (req, res, next) {
     "Origin, X-Requested-With, Content-Type, Accept",
   )
   next()
-})
+}
+
+app.use(sliderRequestHandler)
+
 app.use(bodyParser.json())
 app.use("/api", api)
 

@@ -1,0 +1,7 @@
+{
+  "legacyWatch": true,
+  "watch": "src/**/*.ts",
+  "execMap": {
+    "ts": "ts-node"
+  }
+}

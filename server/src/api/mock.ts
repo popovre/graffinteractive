@@ -1,7 +1,7 @@
 const fs = require("node:fs")
 const imagesDir = "../server/assets/images"
 
-console.log("mock 2")
+console.log("mock 3")
 
 const readDir = dir => {
   try {
