@@ -1,5 +1,7 @@
 import type { RequestHandler } from "express"
 
+import type { WebSocket } from "ws"
+
 const express = require("express")
 const api = require("./api")
 
@@ -24,14 +26,18 @@ app.use(sliderRequestHandler)
 app.use(bodyParser.json())
 app.use("/api", api)
 
-app.listen(PORT_HTTP, "localhost", function (err) {
+type ListenCallback = (err?: Error) => void
+
+const listenHandler: ListenCallback = (err?: Error) => {
   if (err) {
     console.log(err)
     return
   }
 
   console.log("Listening HTTP at http://localhost:" + PORT_HTTP)
-})
+}
+
+app.listen(PORT_HTTP, "localhost", listenHandler)
 
 // TODO: make WS server
 const appWS = express()
@@ -43,28 +49,41 @@ console.log("hello oo aaa")
 
 appWS.use(express.json())
 
-appWS.ws("/", (ws, req) => {
+interface WebSocketMessage {
+  method: `connection` | `chat`
+}
+
+interface WebSocketWithId extends WebSocket {
+  id: number
+}
+
+appWS.ws("/", (ws: WebSocketWithId, req: WebSocketMessage) => {
   console.log("Connection WS completed")
+
   ws.id = Date.now()
 
   ws.on("message", msg => {
-    msg = JSON.parse(msg)
-    console.log(msg, "msg")
-    switch (msg.method) {
-      case "connection": {
-        console.log("fag")
-        // connectionHandler(ws, msg)
-        broadcastConnection(ws, msg)
-        break
+    if (typeof msg === "string") {
+      const parsedMsg = JSON.parse(msg) as { method: string }
+      console.log(msg, "msg")
+      switch (parsedMsg.method) {
+        case "connection": {
+          console.log("fag")
+          // connectionHandler(ws, msg)
+          broadcastConnection(ws, msg)
+          break
+        }
+        case "chat": {
+          console.log("hehe")
+          broadcastConnection(ws, msg)
+          break
+        }
+        default: {
+          console.log("default case")
+        }
       }
-      case "chat": {
-        console.log("hehe")
-        broadcastConnection(ws, msg)
-        break
-      }
-      default: {
-        console.log("default case")
-      }
+    } else {
+      console.error("Received non-string message:", msg)
     }
   })
 })
@@ -74,8 +93,8 @@ appWS.ws("/", (ws, req) => {
 //   broadcastConnection(ws, msg)
 // }
 
-const broadcastConnection = (ws, msg) => {
-  aWss.clients.forEach(client => {
+const broadcastConnection = (ws: WebSocket, msg: any) => {
+  aWss.clients.forEach((client: WebSocket) => {
     client.send(JSON.stringify(msg))
   })
 }
