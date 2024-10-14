@@ -34,6 +34,7 @@ const WSServer = require("express-ws")(appWS)
 
 const aWss = WSServer.getWss()
 const PORT_WS = process.env.PORT || 5000
+console.log("hello oo aaa")
 
 appWS.use(express.json())
 
@@ -46,11 +47,13 @@ appWS.ws("/", (ws, req) => {
     console.log(msg, "msg")
     switch (msg.method) {
       case "connection": {
+        console.log("fag")
         // connectionHandler(ws, msg)
         broadcastConnection(ws, msg)
         break
       }
       case "chat": {
+        console.log("hehe")
         broadcastConnection(ws, msg)
         break
       }

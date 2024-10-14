@@ -1,6 +1,6 @@
 import styles from "./style.module.scss"
 import Tg from "../../assets/icons/tg.svg?react"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { useLocation } from "react-router-dom"
 
 const PORT = 5000

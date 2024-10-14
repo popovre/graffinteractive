@@ -1,10 +1,12 @@
 const fs = require("node:fs")
-const imagesDir = "./server/assets/images"
+const imagesDir = "../server/assets/images"
+
+console.log("mock 2")
 
 const readDir = dir => {
   try {
     // dec array
-    const fileNames = fs.readdirSync("./server/assets/images")
+    const fileNames = fs.readdirSync(dir)
     const images = fileNames.map((name, index) => {
       return {
         id: index,
