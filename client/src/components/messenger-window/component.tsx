@@ -1,7 +1,7 @@
 import styles from "./style.module.scss"
+// @ts-ignore
 import Tg from "../../assets/icons/tg.svg?react"
 import { useRef, useState } from "react"
-import { useLocation } from "react-router-dom"
 
 const PORT = 5000
 const BASE_QUERY = `ws://localhost:${PORT}/`
@@ -10,14 +10,23 @@ export interface MessengerWindowProps {
   client: string
 }
 
+interface WebSocketMessage {
+  method: `connection` | `chat`
+  name: string
+  id: number
+  message?: string
+  input?: boolean
+}
+
+export type chat = WebSocketMessage[]
+
 const MessengerWindow = ({ client }: MessengerWindowProps) => {
-  const [chat, setChat] = useState([])
+  const [chat, setChat] = useState<chat>([])
   const [message, setMessage] = useState("")
   const [connected, setConnected] = useState(false)
   const [username, setUsername] = useState("")
-  const socketRef = useRef()
 
-  const clientId = useLocation()
+  const socketRef = useRef<WebSocket | null>(null)
 
   const sentMessage = () => {
     const msg = {
@@ -26,7 +35,8 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
       message: message,
       id: Date.now(),
     }
-    socketRef.current.send(JSON.stringify(msg))
+
+    socketRef.current?.send(JSON.stringify(msg))
 
     setMessage("")
   }
@@ -40,19 +50,21 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
     socketRef.current.onopen = () => {
       setConnected(true)
 
-      const msg = {
+      const msg: WebSocketMessage = {
         name: username,
         id,
         method: "connection",
       }
 
-      socketRef.current.send(JSON.stringify(msg))
+      console.log(msg, "msg")
+
+      socketRef.current?.send(JSON.stringify(msg))
     }
 
     socketRef.current.onmessage = evt => {
       console.log("ws message")
-      const msg = JSON.parse(evt.data)
-      setChat(prev => [msg, ...prev])
+      const parsedMsg: WebSocketMessage = JSON.parse(evt.data)
+      setChat(prev => [parsedMsg, ...prev])
     }
 
     socketRef.current.onclose = () => {
@@ -92,6 +104,7 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
       <h2 className={styles.title}>Чат с</h2>
       <div className={styles.window}>
         {chat.map(({ input, name, message, method, id }, index, array) => {
+          console.log({ input, name, message, method, id }, "got msg")
           return method === "connection" ? (
             <p className={styles.message} key={id}>
               {`Пользователь ${name} подключился`}

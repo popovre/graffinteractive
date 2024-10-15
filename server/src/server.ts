@@ -45,36 +45,37 @@ const WSServer = require('express-ws')(appWS);
 
 const aWss = WSServer.getWss();
 const PORT_WS = process.env.PORT || 5000;
-console.log('hello oo aaa');
 
 appWS.use(express.json());
 
 interface WebSocketMessage {
   method: `connection` | `chat`;
+  name: string;
+  id: number;
+  message?: string;
+  input?: boolean;
 }
 
 interface WebSocketWithId extends WebSocket {
   id: number;
 }
 
-appWS.ws('/', (ws: WebSocketWithId, req: WebSocketMessage) => {
-  console.log('Connection WS completed');
-
+appWS.ws('/', (ws: WebSocketWithId) => {
   ws.id = Date.now();
 
   ws.on('message', (msg) => {
+    console.log(msg, typeof msg);
     if (typeof msg === 'string') {
-      const parsedMsg = JSON.parse(msg) as { method: string };
-      console.log(msg, 'msg');
+      const parsedMsg = JSON.parse(msg) as WebSocketMessage;
       switch (parsedMsg.method) {
         case 'connection': {
-          console.log('fag');
-          broadcastConnection(ws, msg);
+          console.log('connection');
+          broadcastConnection(ws, parsedMsg);
           break;
         }
         case 'chat': {
-          console.log('hehe');
-          broadcastConnection(ws, msg);
+          console.log('chat');
+          broadcastConnection(ws, parsedMsg);
           break;
         }
         default: {
@@ -87,13 +88,8 @@ appWS.ws('/', (ws: WebSocketWithId, req: WebSocketMessage) => {
   });
 });
 
-// const connectionHandler = (ws, msg) => {
-//   ws.id = msg.id
-//   broadcastConnection(ws, msg)
-// }
-
-const broadcastConnection = (ws: WebSocket, msg: any) => {
-  aWss.clients.forEach((client: WebSocket) => {
+const broadcastConnection = (ws: WebSocket, msg: WebSocketMessage) => {
+  aWss.clients.forEach((client: any, index: number) => {
     client.send(JSON.stringify(msg));
   });
 };
