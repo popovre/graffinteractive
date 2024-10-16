@@ -9,7 +9,7 @@ import Dots from "./dots/component"
 import { SliderContext } from "../../context/slider"
 import Loader from "../loader/component"
 import { useFetchData } from "./use-fetch-data"
-import { BASE_QUERY } from "../../constants"
+import { BASE_HTTP_QUERY } from "../../constants"
 import ErrorComponent from "./error-component/component"
 
 export type slides = slide[]
@@ -17,7 +17,7 @@ export type slides = slide[]
 const Slider = () => {
   const [slides, setSlides] = useState<slides>([])
   const [slideIndex, setSlideIndex] = useState(0)
-  const [url, setUrl] = useState(`${BASE_QUERY}/${slideIndex}`)
+  const [url, setUrl] = useState(`${BASE_HTTP_QUERY}/${slideIndex}`)
   const [refresh, setRefresh] = useState(false)
 
   const isDuplicatedSlide = (fetchdedData: slide): boolean =>
@@ -38,7 +38,7 @@ const Slider = () => {
   )
 
   const fetchSlide = (nextSlide: number) => {
-    setUrl(`${BASE_QUERY}/${nextSlide}`)
+    setUrl(`${BASE_HTTP_QUERY}/${nextSlide}`)
     setRefresh(!refresh)
   }
 

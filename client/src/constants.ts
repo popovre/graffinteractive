@@ -1,1 +1,4 @@
-export const BASE_QUERY = "http://localhost:3001/api/slides"
+export const PORT = 3001
+
+export const BASE_HTTP_QUERY = `http://localhost:${PORT}/api/slides`
+export const BASE_WS_QUERY = `ws://localhost:${PORT}/`

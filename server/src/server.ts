@@ -4,12 +4,13 @@ import type { WebSocket } from 'ws';
 
 const express = require('express');
 const api = require('./api');
-
 const bodyParser = require('body-parser');
 
 const app = express();
 
-const PORT_HTTP = 3001;
+const PORT = 3001;
+
+const WSServer = require('express-ws')(app);
 
 const sliderRequestHandler: RequestHandler = (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -34,19 +35,13 @@ const listenHandler: ListenCallback = (err?: Error) => {
     return;
   }
 
-  console.log('Listening HTTP at http://localhost:' + PORT_HTTP);
+  console.log('Listening HTTP && WS at http://localhost:' + PORT);
 };
 
-app.listen(PORT_HTTP, 'localhost', listenHandler);
-
-// TODO: make WS server
-const appWS = express();
-const WSServer = require('express-ws')(appWS);
-
+// make WS server
 const aWss = WSServer.getWss();
-const PORT_WS = process.env.PORT || 5000;
 
-appWS.use(express.json());
+app.use(express.json());
 
 interface WebSocketMessage {
   method: `connection` | `chat`;
@@ -60,7 +55,7 @@ interface WebSocketWithId extends WebSocket {
   id: number;
 }
 
-appWS.ws('/', (ws: WebSocketWithId) => {
+app.ws('/', (ws: WebSocketWithId) => {
   ws.id = Date.now();
 
   ws.on('message', (msg) => {
@@ -94,6 +89,4 @@ const broadcastConnection = (ws: WebSocket, msg: WebSocketMessage) => {
   });
 };
 
-appWS.listen(PORT_WS, () =>
-  console.log(`Listening WS at ws://localhost: ${PORT_WS}`)
-);
+app.listen(PORT, 'localhost', listenHandler);

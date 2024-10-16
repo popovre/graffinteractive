@@ -1,12 +1,12 @@
 import styles from "./style.module.scss"
+import { BASE_WS_QUERY } from "../../constants"
 // @ts-ignore
 import Tg from "../../assets/icons/tg.svg?react"
 import { useRef, useState } from "react"
-
-const PORT = 5000
-const BASE_QUERY = `ws://localhost:${PORT}/`
+import Login from "../login/component"
 
 export interface MessengerWindowProps {
+  children?: React.ReactElement
   client: string
 }
 
@@ -20,7 +20,7 @@ interface WebSocketMessage {
 
 export type chat = WebSocketMessage[]
 
-const MessengerWindow = ({ client }: MessengerWindowProps) => {
+const MessengerWindow = ({ children, client }: MessengerWindowProps) => {
   const [chat, setChat] = useState<chat>([])
   const [message, setMessage] = useState("")
   const [connected, setConnected] = useState(false)
@@ -42,7 +42,7 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
   }
 
   const connect = () => {
-    socketRef.current = new WebSocket(BASE_QUERY)
+    socketRef.current = new WebSocket(BASE_WS_QUERY)
 
     const id = Date.now()
 
@@ -76,31 +76,32 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
     }
   }
 
-  if (!connected) {
-    return (
-      <div className={styles.login}>
-        <form
-          onSubmit={evt => {
-            evt.preventDefault()
-            connect()
-          }}
-        >
-          <input
-            type="text"
-            value={username}
-            onChange={evt => {
-              setUsername(evt.target.value)
-            }}
-            placeholder="введите ваше имя"
-          />
-          <button type="submit">войти</button>
-        </form>
-      </div>
-    )
-  }
+  // if (!connected) {
+  //   return (
+  //     <div className={styles.login}>
+  //       <form
+  //         onSubmit={evt => {
+  //           evt.preventDefault()
+  //           connect()
+  //         }}
+  //       >
+  //         <input
+  //           type="text"
+  //           value={username}
+  //           onChange={evt => {
+  //             setUsername(evt.target.value)
+  //           }}
+  //           placeholder="введите ваше имя"
+  //         />
+  //         <button type="submit">войти</button>
+  //       </form>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className={styles.root}>
+      {client === "user" && !connected && <Login setUsername={setUsername} />}
       <h2 className={styles.title}>Чат с</h2>
       <div className={styles.window}>
         {chat.map(({ input, name, message, method, id }, index, array) => {

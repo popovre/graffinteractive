@@ -1,7 +1,8 @@
-const router = require('express').Router();
 import { Request, Response, NextFunction } from 'express';
 import { slides } from './mock';
 import { reply, getByIndex } from './utils';
+
+const router = require('express').Router();
 
 router.get('/slides', (req: Request, res: Response, next: NextFunction) => {
   console.log('request');
