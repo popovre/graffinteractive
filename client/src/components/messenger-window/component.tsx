@@ -1,9 +1,9 @@
 import styles from "./style.module.scss"
 import { BASE_WS_QUERY } from "../../constants"
+import { useEffect, useRef, useState } from "react"
+import Login from "../login/component"
 // @ts-ignore
 import Tg from "../../assets/icons/tg.svg?react"
-import { useRef, useState } from "react"
-import Login from "../login/component"
 
 export interface MessengerWindowProps {
   children?: React.ReactElement
@@ -24,7 +24,7 @@ const MessengerWindow = ({ children, client }: MessengerWindowProps) => {
   const [chat, setChat] = useState<chat>([])
   const [message, setMessage] = useState("")
   const [connected, setConnected] = useState(false)
-  const [username, setUsername] = useState("")
+  const [username, setUsername] = useState(client === "manager" ? client : "")
 
   const socketRef = useRef<WebSocket | null>(null)
 
@@ -41,63 +41,41 @@ const MessengerWindow = ({ children, client }: MessengerWindowProps) => {
     setMessage("")
   }
 
-  const connect = () => {
-    socketRef.current = new WebSocket(BASE_WS_QUERY)
+  useEffect(() => {
+    if (username || client === "manager") {
+      socketRef.current = new WebSocket(BASE_WS_QUERY)
+      const id = Date.now()
 
-    const id = Date.now()
+      socketRef.current.onopen = () => {
+        setConnected(true)
 
-    // setSocketState(socket)
-    socketRef.current.onopen = () => {
-      setConnected(true)
+        const msg: WebSocketMessage = {
+          name: username,
+          id,
+          method: "connection",
+        }
 
-      const msg: WebSocketMessage = {
-        name: username,
-        id,
-        method: "connection",
+        console.log(msg, "msg")
+
+        socketRef.current?.send(JSON.stringify(msg))
       }
 
-      console.log(msg, "msg")
+      socketRef.current.onmessage = evt => {
+        console.log("ws message")
+        const parsedMsg: WebSocketMessage = JSON.parse(evt.data)
+        setChat(prev => [...prev, parsedMsg])
+      }
 
-      socketRef.current?.send(JSON.stringify(msg))
+      socketRef.current.onclose = () => {
+        setConnected(false)
+        console.log("ws close")
+      }
+
+      socketRef.current.onerror = () => {
+        console.log("ws error")
+      }
     }
-
-    socketRef.current.onmessage = evt => {
-      console.log("ws message")
-      const parsedMsg: WebSocketMessage = JSON.parse(evt.data)
-      setChat(prev => [parsedMsg, ...prev])
-    }
-
-    socketRef.current.onclose = () => {
-      console.log("ws close")
-    }
-
-    socketRef.current.onerror = () => {
-      console.log("ws error")
-    }
-  }
-
-  // if (!connected) {
-  //   return (
-  //     <div className={styles.login}>
-  //       <form
-  //         onSubmit={evt => {
-  //           evt.preventDefault()
-  //           connect()
-  //         }}
-  //       >
-  //         <input
-  //           type="text"
-  //           value={username}
-  //           onChange={evt => {
-  //             setUsername(evt.target.value)
-  //           }}
-  //           placeholder="введите ваше имя"
-  //         />
-  //         <button type="submit">войти</button>
-  //       </form>
-  //     </div>
-  //   )
-  // }
+  }, [username, client])
 
   return (
     <div className={styles.root}>
@@ -105,7 +83,6 @@ const MessengerWindow = ({ children, client }: MessengerWindowProps) => {
       <h2 className={styles.title}>Чат с</h2>
       <div className={styles.window}>
         {chat.map(({ input, name, message, method, id }, index, array) => {
-          console.log({ input, name, message, method, id }, "got msg")
           return method === "connection" ? (
             <p className={styles.message} key={id}>
               {`Пользователь ${name} подключился`}

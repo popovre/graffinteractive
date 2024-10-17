@@ -18,7 +18,6 @@ const Login = ({ setUsername }: LoginProps) => {
             const trimmedName = state.trim()
             setUsername(trimmedName)
           }
-          //   connect()
         }}
       >
         <input
