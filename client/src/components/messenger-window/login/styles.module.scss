@@ -20,10 +20,12 @@
 .input {
   @include inputres;
 
-  border-radius: 6px;
-  width: 100%;
-  max-width: 300px;
-  padding: 5px;
-  border: 2px solid;
-  border-color: var(--asc-btn);
+  & {
+    border-radius: 6px;
+    width: 100%;
+    max-width: 300px;
+    padding: 5px;
+    border: 2px solid;
+    border-color: var(--asc-btn);
+  }
 }

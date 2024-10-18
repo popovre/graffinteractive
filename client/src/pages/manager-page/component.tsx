@@ -5,8 +5,9 @@ import styles from "./style.module.scss"
 const ManagerPage = () => {
   return (
     <div className={styles.root}>
-      <Dialogs />
-      <MessengerWindow client={"manager"} />
+      <MessengerWindow client={"manager"}>
+        <Dialogs />
+      </MessengerWindow>
     </div>
   )
 }

@@ -1,6 +1,5 @@
 .root {
   min-height: 80vh;
-  display: grid;
-  grid-template-columns: 300px 1fr;
+
   @include content;
 }

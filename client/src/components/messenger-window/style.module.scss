@@ -1,7 +1,12 @@
 .root {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  position: relative;
+}
+
+.windowRoot {
   display: flex;
   flex-direction: column;
-  position: relative;
 }
 
 .title {
@@ -81,41 +86,4 @@
 
 .topMargin {
   margin-top: 12px;
-}
-
-.label {
-  display: flex;
-  justify-content: space-between;
-  height: 50px;
-
-  padding-right: 12px;
-  background-color: var(--asc-bg-inverted);
-}
-
-.label > .input:focus-visible ~ .buttonSubmit path {
-  fill: var(--asc-icon-hovered);
-}
-
-.input {
-  @include inputres;
-
-  & {
-    flex-grow: 1;
-    padding-inline: 16px;
-    padding-block: 14px;
-  }
-}
-
-.buttonSubmit {
-  @include btnres;
-  width: 24px;
-  height: 24px;
-  align-self: center;
-}
-
-.tg {
-  & path {
-    transition: fill 0.2s;
-    fill: #a3a7bf;
-  }
 }
