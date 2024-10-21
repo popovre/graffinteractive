@@ -1,5 +1,4 @@
 .root {
-  min-height: 80vh;
-
   @include content;
+  height: 100%;
 }

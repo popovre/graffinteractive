@@ -59,7 +59,7 @@ app.ws('/', (ws: WebSocketWithId) => {
   ws.id = Date.now();
 
   ws.on('message', (msg) => {
-    console.log(msg, typeof msg);
+    // console.log(msg, typeof msg);
     if (typeof msg === 'string') {
       const parsedMsg = JSON.parse(msg) as WebSocketMessage;
       switch (parsedMsg.method) {
@@ -85,6 +85,7 @@ app.ws('/', (ws: WebSocketWithId) => {
 
 const broadcastConnection = (ws: WebSocket, msg: WebSocketMessage) => {
   aWss.clients.forEach((client: any, index: number) => {
+    console.log(client.id, 'index');
     client.send(JSON.stringify(msg));
   });
 };

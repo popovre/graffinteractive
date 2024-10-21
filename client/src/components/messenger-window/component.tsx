@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import Login from "./login/component"
 
 import MessageForm from "./message-form/component"
+import Dialogs from "../dialogs/component"
 
 export interface MessengerWindowProps {
   children?: React.ReactElement
@@ -33,18 +34,28 @@ interface connection {
 
 type getInitials = (name: string, secondName?: string) => string
 
-const MessengerWindow = ({ children, client }: MessengerWindowProps) => {
+interface user {
+  name: string
+  id: string
+}
+
+export type users = user[]
+
+const MessengerWindow = ({ client }: MessengerWindowProps) => {
   const [chat, setChat] = useState<chat>([])
   const [connection, setConnection] = useState<connection>({
     contact: "",
     connected: false,
   })
 
+  const [users, setUsers] = useState<users>([])
+
   const [user, setUser] = useState<loginFormState>(
     client === "manager" ? { name: client } : { name: "" },
   )
 
   const socketRef = useRef<WebSocket | null>(null)
+  const windowRef = useRef<HTMLDivElement>(null)
 
   const getInitials: getInitials = (name, secondName) =>
     `${name[0].toUpperCase()}${secondName ? secondName[0].toUpperCase() : ""}`
@@ -74,9 +85,7 @@ const MessengerWindow = ({ children, client }: MessengerWindowProps) => {
           id,
           method: "connection",
         }
-
         console.log(msg, "msg")
-
         socketRef.current?.send(JSON.stringify(msg))
       }
 
@@ -86,10 +95,14 @@ const MessengerWindow = ({ children, client }: MessengerWindowProps) => {
 
         switch (parsedMsg.method) {
           case "connection": {
-            setConnection((prev: connection) => ({
+            // setConnection((prev: connection) => ({
+            //   ...prev,
+            //   contact: parsedMsg.name,
+            // }))
+            setUsers((prev: users) => [
               ...prev,
-              contact: parsedMsg.name,
-            }))
+              { id: String(parsedMsg.id), name: parsedMsg.name },
+            ])
             break
           }
           case "chat": {
@@ -116,17 +129,29 @@ const MessengerWindow = ({ children, client }: MessengerWindowProps) => {
         console.log("ws error")
       }
     }
+    return () => {
+      socketRef.current?.close()
+    }
   }, [user.name, client])
+
+  useEffect(() => {
+    if (windowRef.current) {
+      const lastMessage = windowRef.current.children[chat.length - 1]
+      lastMessage?.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [chat])
 
   return (
     <div className={styles.root}>
       {client !== "manager" && !connection.connected && (
         <Login setUser={setUser} />
       )}
-      {children}
+      {client === "manager" && <Dialogs users={users} />}
       <div className={styles.windowRoot}>
-        <h2 className={styles.title}>Чат с {connection.contact}</h2>
-        <div className={styles.window}>
+        <h2 className={styles.title}>
+          Чат с {client === "manager" ? connection.contact : "manager"}
+        </h2>
+        <div className={styles.window} ref={windowRef}>
           {chat.map(
             (
               { input, name, secondName, message, method, id },

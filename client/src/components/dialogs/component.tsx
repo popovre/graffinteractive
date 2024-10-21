@@ -1,41 +1,17 @@
 import styles from "./style.module.scss"
+import type { users } from "../messenger-window/component"
 
-const dialogs = [
-  {
-    name: "Roman Evgenich",
-    message: "Сообщение и что с ним происходит, если оно не влезло",
-  },
-  {
-    name: "Roman Evgenich",
-    message: "Сообщение и что с ним происходит, если оно не влезло",
-  },
-  {
-    name: "Roman Evgenich",
-    message: "Сообщение и что с ним происходит, если оно не влезло",
-  },
-  {
-    name: "Roman Evgenich",
-    message: "Сообщение и что с ним происходит, если оно не влезло",
-  },
-  {
-    name: "Roman Evgenich",
-    message: "Сообщение и что с ним происходит, если оно не влезло",
-  },
-]
+interface DialogsProps {
+  users: users
+}
 
-const Dialogs = () => {
+const Dialogs = ({ users }: DialogsProps) => {
   return (
     <div className={styles.root}>
-      {dialogs.map(({ name, message }, index) => (
+      {users?.map(({ name, id }, index) => (
         <div className={styles.dialog} key={index}>
-          <span>
-            {name
-              ?.split(" ")
-              .map(element => element[0])
-              .join("")}
-          </span>
           <p className={styles.name}>{name}</p>
-          <p className={styles.message}>{message}</p>
+          {/* <p className={styles.message}>{message}</p> */}
         </div>
       ))}
     </div>

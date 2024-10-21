@@ -7,7 +7,7 @@ export const useFetchData = (
   slideIndex: number,
   refresh?: boolean,
 ) => {
-  let controller = new AbortController()
+  // let controller = new AbortController()
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -17,23 +17,35 @@ export const useFetchData = (
   }, [slideIndex])
 
   useEffect(() => {
+    let cancelled = false
     setIsLoading(true)
     setError(null)
-    fetch(url, { signal: controller.signal })
+    fetch(
+      url,
+      // TODO: выяснить почему при строгом режиме происходит аборт запроса при первоначальной загрузке
+      //  { signal: controller.signal }
+    )
       .then(res => res.json())
       .then(respData => {
-        setData(respData)
-        callback(respData)
+        if (!cancelled) {
+          setData(respData)
+          callback(respData)
+        }
       })
       .catch(e => {
-        console.error(e)
-        setError(e)
+        if (!cancelled) {
+          console.error(e)
+          setError(e)
+        }
       })
       .finally(() => {
-        setIsLoading(false)
+        if (!cancelled) {
+          setIsLoading(false)
+        }
       })
     return () => {
-      controller.abort()
+      // controller.abort()
+      cancelled = true
     }
   }, [url, refresh])
 
