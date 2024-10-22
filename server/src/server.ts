@@ -10,7 +10,7 @@ const app = express();
 
 const PORT = 3001;
 
-const WSServer = require('express-ws')(app);
+const expressWs = require('express-ws')(app);
 
 const sliderRequestHandler: RequestHandler = (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -38,8 +38,8 @@ const listenHandler: ListenCallback = (err?: Error) => {
   console.log('Listening HTTP && WS at http://localhost:' + PORT);
 };
 
-// make WS server
-const aWss = WSServer.getWss();
+// make WSS endpoints
+// const Wss = expressWs.getWss();
 
 app.use(express.json());
 
@@ -49,28 +49,68 @@ interface WebSocketMessage {
   id: number;
   message?: string;
   input?: boolean;
+  roomId: string;
+  userType?: 'manager' | 'client';
 }
 
 interface WebSocketWithId extends WebSocket {
   id: number;
 }
 
+export type roomId = string;
+
+interface room {
+  clients: WebSocket[];
+  managerWs: WebSocket | null;
+}
+
+export interface rooms {
+  [roomId: string]: room;
+}
+
+const rooms: rooms = {
+  manager: {
+    clients: [],
+    managerWs: null,
+  },
+};
+
 app.ws('/', (ws: WebSocketWithId) => {
   ws.id = Date.now();
 
   ws.on('message', (msg) => {
-    // console.log(msg, typeof msg);
     if (typeof msg === 'string') {
       const parsedMsg = JSON.parse(msg) as WebSocketMessage;
+
       switch (parsedMsg.method) {
         case 'connection': {
           console.log('connection');
-          broadcastConnection(ws, parsedMsg);
+          const roomId = parsedMsg.roomId;
+          console.log(roomId, 'roomId');
+
+          if (!rooms[roomId]) {
+            rooms[roomId] = {
+              clients: [],
+              managerWs: null,
+            };
+          }
+
+          rooms[roomId].clients.push(ws);
+
+          if (parsedMsg.name === 'manager') {
+            rooms[roomId].managerWs = ws;
+          }
+
+          console.log(rooms[roomId], 'connect room');
+
+          broadcastConnection(parsedMsg, roomId);
           break;
         }
         case 'chat': {
           console.log('chat');
-          broadcastConnection(ws, parsedMsg);
+          const roomId = parsedMsg.roomId;
+
+          broadcastConnection(parsedMsg, roomId);
           break;
         }
         default: {
@@ -83,11 +123,20 @@ app.ws('/', (ws: WebSocketWithId) => {
   });
 });
 
-const broadcastConnection = (ws: WebSocket, msg: WebSocketMessage) => {
-  aWss.clients.forEach((client: any, index: number) => {
-    console.log(client.id, 'index');
-    client.send(JSON.stringify(msg));
-  });
+// const broadcastConnection = (ws: WebSocket, msg: WebSocketMessage) => {
+//   Wss.clients.forEach((client: any, index: number) => {
+//     client.send(JSON.stringify(msg));
+//   });
+// };
+const broadcastConnection = (msg: WebSocketMessage, roomId: roomId) => {
+  if (rooms[roomId]) {
+    rooms[roomId].clients.forEach((client) => {
+      client.send(JSON.stringify(msg));
+    });
+    if (rooms[roomId].managerWs) {
+      rooms[roomId].managerWs.send(JSON.stringify(msg));
+    }
+  }
 };
 
 app.listen(PORT, 'localhost', listenHandler);

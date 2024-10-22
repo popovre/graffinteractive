@@ -4,14 +4,14 @@ import { useState } from "react"
 import Tg from "../../../assets/icons/tg.svg?react"
 
 interface MessageFormProps {
-  sentMessage: (message: string) => void
+  sendMessage: (message: string) => void
 }
 
-const MessageForm = ({ sentMessage }: MessageFormProps) => {
+const MessageForm = ({ sendMessage }: MessageFormProps) => {
   const [message, setMessage] = useState("")
 
   const inputHandler = () => {
-    sentMessage(message)
+    sendMessage(message)
     setMessage("")
   }
 

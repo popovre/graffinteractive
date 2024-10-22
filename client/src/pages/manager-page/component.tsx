@@ -4,7 +4,7 @@ import styles from "./style.module.scss"
 const ManagerPage = () => {
   return (
     <div className={styles.root}>
-      <MessengerWindow client={"manager"} />
+      <MessengerWindow userStatus={"manager"} />
     </div>
   )
 }

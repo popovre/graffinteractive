@@ -6,7 +6,7 @@ const UserPage = () => {
   return (
     <div className={styles.root}>
       <Slider />
-      <MessengerWindow client={"user"} />
+      <MessengerWindow userStatus={"user"} />
     </div>
   )
 }

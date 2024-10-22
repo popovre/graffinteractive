@@ -10,10 +10,11 @@ interface LoginProps {
 const INITIAL_FORM: loginFormState = {
   name: "",
   secondName: "",
+  password: "",
 }
 
 const Login = ({ setUser }: LoginProps) => {
-  const [form, setName, setSecondName] = useLogin(INITIAL_FORM)
+  const [form, setName, setSecondName, setPassword] = useLogin(INITIAL_FORM)
 
   return (
     <div className={styles.root}>
@@ -47,6 +48,16 @@ const Login = ({ setUser }: LoginProps) => {
             setSecondName(evt)
           }}
           placeholder="введите вашу фамилию"
+        />
+        <input
+          className={styles.input}
+          type="text"
+          value={form.password}
+          onChange={evt => {
+            setPassword(evt)
+          }}
+          placeholder="введите пароль"
+          required
         />
 
         <button className={styles.submit} type="submit">

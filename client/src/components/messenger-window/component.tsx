@@ -6,9 +6,11 @@ import Login from "./login/component"
 import MessageForm from "./message-form/component"
 import Dialogs from "../dialogs/component"
 
-export interface MessengerWindowProps {
+type userStatus = "manager" | "client"
+
+export interface MessengerWindowProps<status> {
   children?: React.ReactElement
-  client: string
+  userStatus: status
 }
 
 interface WebSocketMessage {
@@ -18,11 +20,14 @@ interface WebSocketMessage {
   id: number
   message?: string
   input?: boolean
+  roomId: string
+  userStatus?: userStatus
 }
 
 export interface loginFormState {
   name: string
   secondName?: string
+  password: string
 }
 
 export type chat = WebSocketMessage[]
@@ -41,7 +46,7 @@ interface user {
 
 export type users = user[]
 
-const MessengerWindow = ({ client }: MessengerWindowProps) => {
+const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
   const [chat, setChat] = useState<chat>([])
   const [connection, setConnection] = useState<connection>({
     contact: "",
@@ -50,9 +55,10 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
 
   const [users, setUsers] = useState<users>([])
 
-  const [user, setUser] = useState<loginFormState>(
-    client === "manager" ? { name: client } : { name: "" },
-  )
+  const [login, setLogin] = useState<loginFormState>({
+    name: userStatus === "manager" ? userStatus : "",
+    password: "",
+  })
 
   const socketRef = useRef<WebSocket | null>(null)
   const windowRef = useRef<HTMLDivElement>(null)
@@ -60,12 +66,14 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
   const getInitials: getInitials = (name, secondName) =>
     `${name[0].toUpperCase()}${secondName ? secondName[0].toUpperCase() : ""}`
 
-  const sentMessage = (message: string) => {
-    const msg = {
+  const sendMessage = (message: string) => {
+    const msg: WebSocketMessage = {
       method: "chat",
-      name: user.name,
-      secondName: user.secondName,
+      userStatus: userStatus,
+      name: login.name,
+      secondName: login.secondName,
       message: message,
+      roomId: login.password,
       id: Date.now(),
     }
 
@@ -73,17 +81,18 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
   }
 
   useEffect(() => {
-    if (user.name || client === "manager") {
+    if (login.name || userStatus === "manager") {
       socketRef.current = new WebSocket(BASE_WS_QUERY)
-      const id = Date.now()
 
       socketRef.current.onopen = () => {
         setConnection({ ...connection, connected: true })
 
         const msg: WebSocketMessage = {
-          name: user.name,
-          id,
+          name: login.name,
+          id: Date.now(),
           method: "connection",
+          userStatus: userStatus,
+          roomId: login.password,
         }
         console.log(msg, "msg")
         socketRef.current?.send(JSON.stringify(msg))
@@ -95,10 +104,10 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
 
         switch (parsedMsg.method) {
           case "connection": {
-            // setConnection((prev: connection) => ({
-            //   ...prev,
-            //   contact: parsedMsg.name,
-            // }))
+            setConnection((prev: connection) => ({
+              ...prev,
+              contact: parsedMsg.name,
+            }))
             setUsers((prev: users) => [
               ...prev,
               { id: String(parsedMsg.id), name: parsedMsg.name },
@@ -132,7 +141,7 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
     return () => {
       socketRef.current?.close()
     }
-  }, [user.name, client])
+  }, [login.name, userStatus])
 
   useEffect(() => {
     if (windowRef.current) {
@@ -143,13 +152,13 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
 
   return (
     <div className={styles.root}>
-      {client !== "manager" && !connection.connected && (
-        <Login setUser={setUser} />
+      {userStatus !== "manager" && !connection.connected && (
+        <Login setUser={setLogin} />
       )}
-      {client === "manager" && <Dialogs users={users} />}
+      {userStatus === "manager" && <Dialogs users={users} />}
       <div className={styles.windowRoot}>
         <h2 className={styles.title}>
-          Чат с {client === "manager" ? connection.contact : "manager"}
+          Чат с {userStatus === "manager" ? connection.contact : "manager"}
         </h2>
         <div className={styles.window} ref={windowRef}>
           {chat.map(
@@ -168,7 +177,7 @@ const MessengerWindow = ({ client }: MessengerWindowProps) => {
             ),
           )}
         </div>
-        <MessageForm sentMessage={sentMessage} />
+        <MessageForm sendMessage={sendMessage} />
       </div>
     </div>
   )
