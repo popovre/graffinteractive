@@ -1,4 +1,5 @@
 import type { RequestHandler } from 'express';
+import type { Express } from 'express';
 
 import type { WebSocket } from 'ws';
 
@@ -10,6 +11,7 @@ const app = express();
 
 const PORT = 3001;
 
+//enable WS
 const expressWs = require('express-ws')(app);
 
 const sliderRequestHandler: RequestHandler = (req, res, next) => {
@@ -50,34 +52,34 @@ interface WebSocketMessage {
   message?: string;
   input?: boolean;
   roomId: string;
-  userType?: 'manager' | 'client';
 }
 
 interface WebSocketWithId extends WebSocket {
-  id: number;
+  id: string;
 }
 
 export type roomId = string;
 
+interface message {
+  id: Date;
+  content: string;
+}
+
 interface room {
-  clients: WebSocket[];
-  managerWs: WebSocket | null;
+  clients: WebSocketWithId[];
+  messages: message[];
+  roomId: string;
 }
 
 export interface rooms {
   [roomId: string]: room;
 }
 
-const rooms: rooms = {
-  manager: {
-    clients: [],
-    managerWs: null,
-  },
-};
+const rooms: rooms = {};
+
+const users = {};
 
 app.ws('/', (ws: WebSocketWithId) => {
-  ws.id = Date.now();
-
   ws.on('message', (msg) => {
     if (typeof msg === 'string') {
       const parsedMsg = JSON.parse(msg) as WebSocketMessage;
@@ -85,25 +87,29 @@ app.ws('/', (ws: WebSocketWithId) => {
       switch (parsedMsg.method) {
         case 'connection': {
           console.log('connection');
+
           const roomId = parsedMsg.roomId;
+          ws.id = parsedMsg.roomId;
+
           console.log(roomId, 'roomId');
 
           if (!rooms[roomId]) {
             rooms[roomId] = {
+              roomId,
               clients: [],
-              managerWs: null,
+              messages: [],
             };
           }
 
-          rooms[roomId].clients.push(ws);
-
-          if (parsedMsg.name === 'manager') {
-            rooms[roomId].managerWs = ws;
+          if (!rooms[roomId].clients.find((client) => client.id === roomId)) {
+            rooms[roomId].clients.push(ws);
           }
+          const msg = {
+            ...parsedMsg,
+            message: rooms[roomId].clients.map((client) => client.id).join(''),
+          };
 
-          console.log(rooms[roomId], 'connect room');
-
-          broadcastConnection(parsedMsg, roomId);
+          broadcastConnection(msg, roomId);
           break;
         }
         case 'chat': {
@@ -133,9 +139,6 @@ const broadcastConnection = (msg: WebSocketMessage, roomId: roomId) => {
     rooms[roomId].clients.forEach((client) => {
       client.send(JSON.stringify(msg));
     });
-    if (rooms[roomId].managerWs) {
-      rooms[roomId].managerWs.send(JSON.stringify(msg));
-    }
   }
 };
 

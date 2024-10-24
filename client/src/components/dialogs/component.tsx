@@ -2,10 +2,10 @@ import styles from "./style.module.scss"
 import type { users } from "../messenger-window/component"
 
 interface DialogsProps {
-  users: users
+  rooms: users
 }
 
-const Dialogs = ({ users }: DialogsProps) => {
+const Dialogs = ({ rooms: users }: DialogsProps) => {
   return (
     <div className={styles.root}>
       {users?.map(({ name, id }, index) => (

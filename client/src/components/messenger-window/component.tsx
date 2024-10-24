@@ -39,12 +39,14 @@ interface connection {
 
 type getInitials = (name: string, secondName?: string) => string
 
-interface user {
-  name: string
-  id: string
+interface room {
+  clients: string[]
+  roomId: string
 }
 
-export type users = user[]
+export interface rooms {
+  [roomId: string]: room
+}
 
 const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
   const [chat, setChat] = useState<chat>([])
@@ -53,11 +55,11 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
     connected: false,
   })
 
-  const [users, setUsers] = useState<users>([])
+  const [rooms, setRooms] = useState<rooms>({})
 
   const [login, setLogin] = useState<loginFormState>({
     name: userStatus === "manager" ? userStatus : "",
-    password: "",
+    password: userStatus === "manager" ? userStatus : "",
   })
 
   const socketRef = useRef<WebSocket | null>(null)
@@ -66,15 +68,14 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
   const getInitials: getInitials = (name, secondName) =>
     `${name[0].toUpperCase()}${secondName ? secondName[0].toUpperCase() : ""}`
 
-  const sendMessage = (message: string) => {
+  const sendMessage = (method: "connection" | "chat", message: string = "") => {
     const msg: WebSocketMessage = {
-      method: "chat",
-      userStatus: userStatus,
+      id: Date.now(),
+      method: method,
       name: login.name,
       secondName: login.secondName,
       message: message,
       roomId: login.password,
-      id: Date.now(),
     }
 
     socketRef.current?.send(JSON.stringify(msg))
@@ -87,15 +88,7 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
       socketRef.current.onopen = () => {
         setConnection({ ...connection, connected: true })
 
-        const msg: WebSocketMessage = {
-          name: login.name,
-          id: Date.now(),
-          method: "connection",
-          userStatus: userStatus,
-          roomId: login.password,
-        }
-        console.log(msg, "msg")
-        socketRef.current?.send(JSON.stringify(msg))
+        sendMessage("connection")
       }
 
       socketRef.current.onmessage = evt => {
@@ -104,14 +97,18 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
 
         switch (parsedMsg.method) {
           case "connection": {
+            console.log("connection")
             setConnection((prev: connection) => ({
               ...prev,
               contact: parsedMsg.name,
             }))
-            setUsers((prev: users) => [
+            setRooms((prev: rooms) => ({
               ...prev,
-              { id: String(parsedMsg.id), name: parsedMsg.name },
-            ])
+              [parsedMsg.roomId]: {
+                roomId: parsedMsg.roomId,
+                clients: parsedMsg.message.split(" "),
+              },
+            }))
             break
           }
           case "chat": {
@@ -155,7 +152,7 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
       {userStatus !== "manager" && !connection.connected && (
         <Login setUser={setLogin} />
       )}
-      {userStatus === "manager" && <Dialogs users={users} />}
+      {/* {userStatus === "manager" && <Dialogs rooms={rooms} />} */}
       <div className={styles.windowRoot}>
         <h2 className={styles.title}>
           Чат с {userStatus === "manager" ? connection.contact : "manager"}

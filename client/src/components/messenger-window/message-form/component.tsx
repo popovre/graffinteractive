@@ -4,14 +4,14 @@ import { useState } from "react"
 import Tg from "../../../assets/icons/tg.svg?react"
 
 interface MessageFormProps {
-  sendMessage: (message: string) => void
+  sendMessage: (method: "connection" | "chat", message: string) => void
 }
 
 const MessageForm = ({ sendMessage }: MessageFormProps) => {
   const [message, setMessage] = useState("")
 
   const inputHandler = () => {
-    sendMessage(message)
+    sendMessage("chat", message)
     setMessage("")
   }
 
