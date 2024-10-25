@@ -46,7 +46,7 @@ const listenHandler: ListenCallback = (err?: Error) => {
 app.use(express.json());
 
 interface WebSocketMessage {
-  method: `connection` | `chat`;
+  method: messageMethod;
   name: string;
   id: number;
   message?: string;
@@ -55,10 +55,13 @@ interface WebSocketMessage {
 }
 
 interface WebSocketWithId extends WebSocket {
-  id: string;
+  id: number;
+  roomId: string;
 }
 
 export type roomId = string;
+
+type messageMethod = 'broadcastRoom' | `connection` | `chat`;
 
 interface message {
   id: Date;
@@ -77,19 +80,18 @@ export interface rooms {
 
 const rooms: rooms = {};
 
-const users = {};
-
 app.ws('/', (ws: WebSocketWithId) => {
   ws.on('message', (msg) => {
     if (typeof msg === 'string') {
       const parsedMsg = JSON.parse(msg) as WebSocketMessage;
+      const { roomId, id, name, method } = parsedMsg;
 
-      switch (parsedMsg.method) {
+      switch (method) {
         case 'connection': {
           console.log('connection');
 
-          const roomId = parsedMsg.roomId;
-          ws.id = parsedMsg.roomId;
+          ws.id = id;
+          ws.roomId = roomId;
 
           console.log(roomId, 'roomId');
 
@@ -101,24 +103,30 @@ app.ws('/', (ws: WebSocketWithId) => {
             };
           }
 
-          if (!rooms[roomId].clients.find((client) => client.id === roomId)) {
-            rooms[roomId].clients.push(ws);
-          }
+          rooms[roomId].clients.push(ws);
+
           const msg = {
             ...parsedMsg,
-            message: rooms[roomId].clients.map((client) => client.id).join(''),
+            message: rooms[roomId].clients.map((client) => client.id).join(' '),
           };
 
-          broadcastConnection(msg, roomId);
+          notificateRoomClients(msg, roomId);
+
+          if (roomId !== 'manager') {
+            notificateManagers(roomId, name);
+          }
+
           break;
         }
+
         case 'chat': {
           console.log('chat');
           const roomId = parsedMsg.roomId;
 
-          broadcastConnection(parsedMsg, roomId);
+          notificateRoomClients(parsedMsg, roomId);
           break;
         }
+
         default: {
           console.log('default case');
         }
@@ -127,17 +135,42 @@ app.ws('/', (ws: WebSocketWithId) => {
       console.error('Received non-string message:', msg);
     }
   });
+
+  ws.on('close', () => {
+    // console.log(ws);
+    const roomId = ws.roomId;
+    if (rooms[roomId]) {
+      rooms[roomId].clients = rooms[roomId].clients.filter(
+        (client) => client.id !== ws.id
+      );
+    }
+  });
 });
 
-// const broadcastConnection = (ws: WebSocket, msg: WebSocketMessage) => {
-//   Wss.clients.forEach((client: any, index: number) => {
-//     client.send(JSON.stringify(msg));
-//   });
-// };
-const broadcastConnection = (msg: WebSocketMessage, roomId: roomId) => {
+const notificateRoomClients = (msg: WebSocketMessage, roomId: roomId) => {
   if (rooms[roomId]) {
     rooms[roomId].clients.forEach((client) => {
+      console.log('send message', msg);
       client.send(JSON.stringify(msg));
+    });
+  }
+};
+
+const notificateManagers = (roomId: roomId, name: string) => {
+  if (rooms) {
+    const managersRoom = Object.values(rooms).find(
+      (room) => room.roomId === 'manager'
+    );
+
+    const msg: WebSocketMessage = {
+      method: 'broadcastRoom',
+      roomId,
+      name,
+      id: Date.now(),
+    };
+
+    managersRoom?.clients?.forEach((client) => {
+      client?.send(JSON.stringify(msg));
     });
   }
 };

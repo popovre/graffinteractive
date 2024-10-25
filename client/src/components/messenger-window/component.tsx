@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import Login from "./login/component"
 
 import MessageForm from "./message-form/component"
-import Dialogs from "../dialogs/component"
+import Dialogs from "./dialogs/component"
 
 type userStatus = "manager" | "client"
 
@@ -13,8 +13,10 @@ export interface MessengerWindowProps<status> {
   userStatus: status
 }
 
+type messageMethod = "broadcastRoom" | `connection` | `chat`
+
 interface WebSocketMessage {
-  method: `connection` | `chat`
+  method: messageMethod
   name: string
   secondName?: string
   id: number
@@ -35,13 +37,15 @@ export type chat = WebSocketMessage[]
 interface connection {
   contact: string
   connected: boolean
+  id: number
 }
 
 type getInitials = (name: string, secondName?: string) => string
 
-interface room {
-  clients: string[]
+export interface room {
+  clients?: string[]
   roomId: string
+  name: string
 }
 
 export interface rooms {
@@ -53,6 +57,7 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
   const [connection, setConnection] = useState<connection>({
     contact: "",
     connected: false,
+    id: 0,
   })
 
   const [rooms, setRooms] = useState<rooms>({})
@@ -68,9 +73,13 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
   const getInitials: getInitials = (name, secondName) =>
     `${name[0].toUpperCase()}${secondName ? secondName[0].toUpperCase() : ""}`
 
-  const sendMessage = (method: "connection" | "chat", message: string = "") => {
+  const sendMessage = (
+    method: messageMethod,
+    message: string = "",
+    id: number = Date.now(),
+  ) => {
     const msg: WebSocketMessage = {
-      id: Date.now(),
+      id,
       method: method,
       name: login.name,
       secondName: login.secondName,
@@ -86,9 +95,11 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
       socketRef.current = new WebSocket(BASE_WS_QUERY)
 
       socketRef.current.onopen = () => {
-        setConnection({ ...connection, connected: true })
+        const socketId = Date.now()
 
-        sendMessage("connection")
+        setConnection({ ...connection, connected: true, id: socketId })
+
+        sendMessage("connection", "", socketId)
       }
 
       socketRef.current.onmessage = evt => {
@@ -97,16 +108,27 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
 
         switch (parsedMsg.method) {
           case "connection": {
-            console.log("connection")
+            console.log("got connection", parsedMsg)
             setConnection((prev: connection) => ({
               ...prev,
               contact: parsedMsg.name,
             }))
+            // setRooms((prev: rooms) => ({
+            //   ...prev,
+            //   [parsedMsg.roomId]: {
+            //     roomId: parsedMsg.roomId,
+            //     clients: parsedMsg?.message.split(" "),
+            //   },
+            // }))
+            break
+          }
+          case "broadcastRoom": {
+            console.log("broadcastRoom", parsedMsg)
             setRooms((prev: rooms) => ({
               ...prev,
               [parsedMsg.roomId]: {
                 roomId: parsedMsg.roomId,
-                clients: parsedMsg.message.split(" "),
+                name: parsedMsg?.name,
               },
             }))
             break
@@ -150,9 +172,11 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
   return (
     <div className={styles.root}>
       {userStatus !== "manager" && !connection.connected && (
-        <Login setUser={setLogin} />
+        <Login setLogin={setLogin} />
       )}
-      {/* {userStatus === "manager" && <Dialogs rooms={rooms} />} */}
+      {userStatus === "manager" && (
+        <Dialogs rooms={rooms} setLogin={setLogin} />
+      )}
       <div className={styles.windowRoot}>
         <h2 className={styles.title}>
           Чат с {userStatus === "manager" ? connection.contact : "manager"}

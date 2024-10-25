@@ -4,7 +4,7 @@ import { useLogin } from "./use-login"
 import type { loginFormState } from "../component"
 
 interface LoginProps {
-  setUser: (user: loginFormState) => void
+  setLogin: (user: loginFormState) => void
 }
 
 const INITIAL_FORM: loginFormState = {
@@ -13,7 +13,7 @@ const INITIAL_FORM: loginFormState = {
   password: "",
 }
 
-const Login = ({ setUser }: LoginProps) => {
+const Login = ({ setLogin }: LoginProps) => {
   const [form, setName, setSecondName, setPassword] = useLogin(INITIAL_FORM)
 
   return (
@@ -23,9 +23,10 @@ const Login = ({ setUser }: LoginProps) => {
         onSubmit={evt => {
           evt.preventDefault()
           if (form.name !== "") {
-            setUser({
+            setLogin({
               name: form.name.trim(),
               secondName: form.secondName?.trim(),
+              password: form.password?.trim(),
             })
           }
         }}
