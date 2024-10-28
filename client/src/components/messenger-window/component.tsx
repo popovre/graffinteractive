@@ -15,15 +15,23 @@ export interface MessengerWindowProps<status> {
 
 type messageMethod = "broadcastRoom" | `connection` | `chat`
 
+interface serviceRoom {
+  roomId: string
+}
+
+interface service {
+  rooms: { [roomId: string]: serviceRoom }
+  roomClients: string
+}
+
 interface WebSocketMessage {
   method: messageMethod
   name: string
   secondName?: string
   id: number
-  message?: string
-  input?: boolean
   roomId: string
-  userStatus?: userStatus
+  message?: string
+  service?: service
 }
 
 export interface loginFormState {
@@ -45,7 +53,7 @@ type getInitials = (name: string, secondName?: string) => string
 export interface room {
   clients?: string[]
   roomId: string
-  name: string
+  name?: string
   secondName?: string
 }
 
@@ -93,7 +101,6 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
   }
 
   useEffect(() => {
-    console.log("effect", login)
     if (login.name || userStatus === "manager") {
       socketRef.current = new WebSocket(BASE_WS_QUERY)
 
@@ -105,7 +112,6 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
       }
 
       socketRef.current.onmessage = evt => {
-        console.log("ws message")
         const parsedMsg: WebSocketMessage = JSON.parse(evt.data)
 
         switch (parsedMsg.method) {
@@ -114,15 +120,17 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
             setChat([])
             setConnection((prev: connection) => ({
               ...prev,
-              contact: parsedMsg.name,
+              contact: parsedMsg.service
+                ? parsedMsg.service.roomClients
+                    .split(" ")
+                    .filter(name => {
+                      console.log(name)
+                      return name !== login.name
+                    })
+                    .join(" ")
+                : "",
             }))
-            // setRooms((prev: rooms) => ({
-            //   ...prev,
-            //   [parsedMsg.roomId]: {
-            //     roomId: parsedMsg.roomId,
-            //     clients: parsedMsg?.message.split(" "),
-            //   },
-            // }))
+            parsedMsg.service ? setRooms(parsedMsg.service.rooms) : setRooms({})
             break
           }
           case "broadcastRoom": {
