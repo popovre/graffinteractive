@@ -1,19 +1,25 @@
 import styles from "./style.module.scss"
 
-import type { room } from "../../component"
+import type { room, loginFormState } from "../../component"
 
 interface DialogProps {
   room: room
-  setLogin: () => void
+  setLogin: ({ name, secondName, password }: loginFormState) => void
+  login: loginFormState
 }
 
-const Dialog = ({ room, setLogin }: DialogProps) => {
+const Dialog = ({ room, login, setLogin }: DialogProps) => {
   const { name, roomId } = room
   return (
     <div
       className={styles.root}
       onClick={() => {
-        setLogin()
+        console.log("click")
+        setLogin({
+          name: login.name,
+          secondName: login.secondName,
+          password: roomId,
+        })
       }}
     >
       <p className={styles.name}>{name}</p>

@@ -46,6 +46,7 @@ export interface room {
   clients?: string[]
   roomId: string
   name: string
+  secondName?: string
 }
 
 export interface rooms {
@@ -64,6 +65,7 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
 
   const [login, setLogin] = useState<loginFormState>({
     name: userStatus === "manager" ? userStatus : "",
+    secondName: "",
     password: userStatus === "manager" ? userStatus : "",
   })
 
@@ -91,6 +93,7 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
   }
 
   useEffect(() => {
+    console.log("effect", login)
     if (login.name || userStatus === "manager") {
       socketRef.current = new WebSocket(BASE_WS_QUERY)
 
@@ -98,7 +101,6 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
         const socketId = Date.now()
 
         setConnection({ ...connection, connected: true, id: socketId })
-
         sendMessage("connection", "", socketId)
       }
 
@@ -109,6 +111,7 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
         switch (parsedMsg.method) {
           case "connection": {
             console.log("got connection", parsedMsg)
+            setChat([])
             setConnection((prev: connection) => ({
               ...prev,
               contact: parsedMsg.name,
@@ -160,7 +163,7 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
     return () => {
       socketRef.current?.close()
     }
-  }, [login.name, userStatus])
+  }, [login, userStatus])
 
   useEffect(() => {
     if (windowRef.current) {
@@ -175,7 +178,7 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
         <Login setLogin={setLogin} />
       )}
       {userStatus === "manager" && (
-        <Dialogs rooms={rooms} setLogin={setLogin} />
+        <Dialogs rooms={rooms} login={login} setLogin={setLogin} />
       )}
       <div className={styles.windowRoot}>
         <h2 className={styles.title}>

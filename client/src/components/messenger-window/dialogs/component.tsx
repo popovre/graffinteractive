@@ -1,17 +1,23 @@
 import styles from "./style.module.scss"
-import type { rooms, room } from "../component"
+import type { rooms, room, loginFormState } from "../component"
 import Dialog from "./dialog/component"
 
 interface DialogsProps {
   rooms: rooms
-  setLogin: () => void
+  login: loginFormState
+  setLogin: ({ name, secondName, password }: loginFormState) => void
 }
 
-const Dialogs = ({ rooms, setLogin }: DialogsProps) => {
+const Dialogs = ({ rooms, login, setLogin }: DialogsProps) => {
   return (
     <div className={styles.root}>
       {Object.values(rooms).map((room: room, index) => (
-        <Dialog room={room} key={room.roomId} setLogin={setLogin} />
+        <Dialog
+          room={room}
+          login={login}
+          key={room.roomId}
+          setLogin={setLogin}
+        />
       ))}
     </div>
   )
