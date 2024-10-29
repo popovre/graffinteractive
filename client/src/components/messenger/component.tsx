@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react"
 import Login from "./login/component"
 
 import MessageForm from "./message-form/component"
-import Dialogs from "./dialogs/component"
+import Rooms from "./rooms/component"
+import Chat from "./chat/component"
 
 type userStatus = "manager" | "client"
 
-export interface MessengerWindowProps<status> {
+export interface MessengerProps<status> {
   children?: React.ReactElement
   userStatus: status
 }
@@ -48,8 +49,6 @@ interface connection {
   id: number
 }
 
-type getInitials = (name: string, secondName?: string) => string
-
 export interface room {
   clients?: string[]
   roomId: string
@@ -61,7 +60,7 @@ export interface rooms {
   [roomId: string]: room
 }
 
-const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
+const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
   const [chat, setChat] = useState<chat>([])
   const [connection, setConnection] = useState<connection>({
     contact: "",
@@ -78,10 +77,6 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
   })
 
   const socketRef = useRef<WebSocket | null>(null)
-  const windowRef = useRef<HTMLDivElement>(null)
-
-  const getInitials: getInitials = (name, secondName) =>
-    `${name[0].toUpperCase()}${secondName ? secondName[0].toUpperCase() : ""}`
 
   const sendMessage = (
     method: messageMethod,
@@ -173,37 +168,23 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
     }
   }, [login, userStatus])
 
-  useEffect(() => {
-    if (windowRef.current) {
-      const lastMessage = windowRef.current.children[chat.length - 1]
-      lastMessage?.scrollIntoView({ behavior: "smooth" })
-    }
-  }, [chat])
-
   return (
     <div className={styles.root}>
       {userStatus !== "manager" && !connection.connected && (
         <Login setLogin={setLogin} />
       )}
       {userStatus === "manager" && (
-        <Dialogs rooms={rooms} login={login} setLogin={setLogin} />
+        <Rooms rooms={rooms} login={login} setLogin={setLogin} />
       )}
       <div className={styles.windowRoot}>
         <h2 className={styles.title}>
           Чат с {userStatus === "manager" ? connection.contact : "manager"}
         </h2>
-        <div className={styles.window} ref={windowRef}>
-          {chat.map(({ name, secondName, message, id }, index, array) => (
-            <p className={`${styles.message}`} key={id}>
-              {message}
-              <span>{getInitials(name, secondName)}</span>
-            </p>
-          ))}
-        </div>
+        <Chat chat={chat} login={login} />
         <MessageForm sendMessage={sendMessage} />
       </div>
     </div>
   )
 }
 
-export default MessengerWindow
+export default Messenger

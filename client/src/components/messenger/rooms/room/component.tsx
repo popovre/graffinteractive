@@ -8,7 +8,7 @@ interface DialogProps {
   login: loginFormState
 }
 
-const Dialog = ({ room, login, setLogin }: DialogProps) => {
+const Room = ({ room, login, setLogin }: DialogProps) => {
   const { name, roomId } = room
   return (
     <div
@@ -28,4 +28,4 @@ const Dialog = ({ room, login, setLogin }: DialogProps) => {
   )
 }
 
-export default Dialog
+export default Room

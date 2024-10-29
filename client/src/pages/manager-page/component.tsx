@@ -1,10 +1,10 @@
-import MessengerWindow from "../../components/messenger-window/component"
+import Messenger from "../../components/messenger/component"
 import styles from "./style.module.scss"
 
 const ManagerPage = () => {
   return (
     <div className={styles.root}>
-      <MessengerWindow userStatus={"manager"} />
+      <Messenger userStatus={"manager"} />
     </div>
   )
 }
