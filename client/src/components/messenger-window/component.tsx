@@ -124,8 +124,9 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
                 ? parsedMsg.service.roomClients
                     .split(" ")
                     .filter(name => {
-                      console.log(name)
-                      return name !== login.name
+                      return parsedMsg.roomId !== "manager"
+                        ? name !== login.name
+                        : name
                     })
                     .join(" ")
                 : "",
@@ -139,7 +140,6 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
               ...prev,
               [parsedMsg.roomId]: {
                 roomId: parsedMsg.roomId,
-                name: parsedMsg?.name,
               },
             }))
             break
@@ -193,21 +193,12 @@ const MessengerWindow = ({ userStatus }: MessengerWindowProps<userStatus>) => {
           Чат с {userStatus === "manager" ? connection.contact : "manager"}
         </h2>
         <div className={styles.window} ref={windowRef}>
-          {chat.map(
-            (
-              { input, name, secondName, message, method, id },
-              index,
-              array,
-            ) => (
-              <p
-                className={`${styles.message} ${input && styles.gotMessage} ${array[index - 1]?.input !== input && styles.topMargin}`}
-                key={id}
-              >
-                {message}
-                <span>{getInitials(name, secondName)}</span>
-              </p>
-            ),
-          )}
+          {chat.map(({ name, secondName, message, id }, index, array) => (
+            <p className={`${styles.message}`} key={id}>
+              {message}
+              <span>{getInitials(name, secondName)}</span>
+            </p>
+          ))}
         </div>
         <MessageForm sendMessage={sendMessage} />
       </div>
