@@ -1,16 +1,12 @@
 import styles from "./style.module.scss"
 import type { chat, loginFormState } from "../component"
 import { useEffect, useRef } from "react"
-
-type getInitialsType = (name: string, secondName?: string) => string
+import Message from "./message/component"
 
 interface ChatProps {
   chat: chat
   login: loginFormState
 }
-
-const getInitials: getInitialsType = (name, secondName) =>
-  `${name[0].toUpperCase()}${secondName ? secondName[0].toUpperCase() : ""}`
 
 const Chat = ({ chat, login }: ChatProps) => {
   const windowRef = useRef<HTMLDivElement>(null)
@@ -24,14 +20,12 @@ const Chat = ({ chat, login }: ChatProps) => {
 
   return (
     <div className={styles.window} ref={windowRef}>
-      {chat.map(({ name, secondName, message, id }, index, array) => (
-        <p
-          className={`${styles.message} ${name !== login.name && styles.gotMessage} ${array[index - 1]?.name !== name && styles.topMargin}`}
-          key={id}
-        >
-          {message}
-          <span>{getInitials(name, secondName)}</span>
-        </p>
+      {chat.map((chatMessage, index, array) => (
+        <Message
+          chatMessage={chatMessage}
+          isInputMessage={chatMessage.name !== login.name}
+          isTopMargin={array[index - 1]?.name !== chatMessage.name}
+        />
       ))}
     </div>
   )

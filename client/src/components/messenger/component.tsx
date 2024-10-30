@@ -25,7 +25,7 @@ interface service {
   roomClients: string
 }
 
-interface WebSocketMessage {
+export interface WebSocketMessage {
   method: messageMethod
   name: string
   secondName?: string
