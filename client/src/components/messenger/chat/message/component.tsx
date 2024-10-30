@@ -15,9 +15,7 @@ const Message: React.FC<MessageProps> = memo(function Message({
   isInputMessage,
   isTopMargin,
 }) {
-  const { name, secondName, message, id } = chatMessage
-
-  console.log("render message")
+  const { name, secondName, message } = chatMessage
 
   const getInitials: getInitialsType = (name, secondName) =>
     `${name[0].toUpperCase()}${secondName ? secondName[0].toUpperCase() : ""}`
@@ -25,7 +23,6 @@ const Message: React.FC<MessageProps> = memo(function Message({
   return (
     <p
       className={`${styles.message} ${isInputMessage && styles.gotMessage} ${isTopMargin && styles.topMargin}`}
-      key={id}
     >
       {message}
       <span>{getInitials(name, secondName)}</span>

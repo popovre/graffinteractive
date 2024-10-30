@@ -23,13 +23,15 @@ interface serviceRoom {
 interface service {
   rooms: { [roomId: string]: serviceRoom }
   roomClients: string
+  messages?: WebSocketMessage[]
 }
 
 export interface WebSocketMessage {
   method: messageMethod
   name: string
   secondName?: string
-  id: number
+  messageId: number
+  socketId?: number
   roomId: string
   message?: string
   service?: service
@@ -52,13 +54,16 @@ interface connection {
 export interface room {
   clients?: string[]
   roomId: string
-  name?: string
+  name: string
   secondName?: string
+  message?: string
 }
 
 export interface rooms {
   [roomId: string]: room
 }
+
+export type sendMessage = (method: messageMethod, message: string) => void
 
 const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
   const [chat, setChat] = useState<chat>([])
@@ -81,10 +86,11 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
   const sendMessage = (
     method: messageMethod,
     message: string = "",
-    id: number = Date.now(),
+    socketId?: number,
   ) => {
     const msg: WebSocketMessage = {
-      id,
+      messageId: Date.now(),
+      socketId,
       method: method,
       name: login.name,
       secondName: login.secondName,
@@ -108,11 +114,13 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
 
       socketRef.current.onmessage = evt => {
         const parsedMsg: WebSocketMessage = JSON.parse(evt.data)
-
+        console.log(parsedMsg, "parsedMsg")
         switch (parsedMsg.method) {
           case "connection": {
-            console.log("got connection", parsedMsg)
-            setChat([])
+            parsedMsg.service?.messages
+              ? setChat(parsedMsg.service?.messages)
+              : setChat([])
+
             setConnection((prev: connection) => ({
               ...prev,
               contact: parsedMsg.service
@@ -135,17 +143,16 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
               ...prev,
               [parsedMsg.roomId]: {
                 roomId: parsedMsg.roomId,
+                name: parsedMsg.name,
+                secondName: parsedMsg.secondName,
+                message: parsedMsg.message,
               },
             }))
             break
           }
           case "chat": {
-            console.log(parsedMsg, "parsedMsg")
             setChat(prev => [...prev, parsedMsg])
             break
-          }
-          default: {
-            console.log("default case")
           }
         }
       }

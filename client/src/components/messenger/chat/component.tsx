@@ -22,6 +22,7 @@ const Chat = memo(function Chat({ chat, login }: ChatProps) {
     <div className={styles.window} ref={windowRef}>
       {chat.map((chatMessage, index, array) => (
         <Message
+          key={chatMessage.messageId}
           chatMessage={chatMessage}
           isInputMessage={chatMessage.name !== login.name}
           isTopMargin={array[index - 1]?.name !== chatMessage.name}

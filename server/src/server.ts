@@ -50,18 +50,19 @@ interface service {
   roomClients: string;
 }
 
-interface WebSocketMessage {
+export interface WebSocketMessage {
   method: messageMethod;
   name: string;
-  secondName: string;
-  id: number;
+  secondName?: string;
+  messageId: number;
+  socketId?: number;
   roomId: string;
   message?: string;
   service?: service;
 }
 
 interface WebSocketExtended extends WebSocket {
-  id: number;
+  id?: number;
   roomId: string;
   name: string;
 }
@@ -70,14 +71,9 @@ export type roomId = string;
 
 type messageMethod = 'broadcastRoom' | `connection` | `chat`;
 
-interface message {
-  id: Date;
-  content: string;
-}
-
 interface room {
   clients: WebSocketExtended[];
-  messages: message[];
+  messages: WebSocketMessage[];
   roomId: string;
 }
 
@@ -95,17 +91,15 @@ app.ws('/', (ws: WebSocketExtended) => {
   ws.on('message', (msg) => {
     if (typeof msg === 'string') {
       const parsedMsg = JSON.parse(msg) as WebSocketMessage;
-      const { roomId, id, name, method, secondName } = parsedMsg;
+      const { roomId, socketId, name, method, secondName } = parsedMsg;
 
       switch (method) {
         case 'connection': {
           console.log('connection', parsedMsg);
 
-          ws.id = id;
+          ws.id = socketId;
           ws.roomId = roomId;
           ws.name = name;
-
-          console.log(roomId, 'roomId');
 
           if (!rooms[roomId]) {
             rooms[roomId] = {
@@ -116,19 +110,7 @@ app.ws('/', (ws: WebSocketExtended) => {
           }
 
           rooms[roomId].clients.push(ws);
-
-          const createServiceRooms = (roomObj: rooms) => {
-            const serviceRooms: { [roomId: string]: serviceRoom } = {};
-
-            Object.values(roomObj).forEach((room: room) => {
-              serviceRooms[room.roomId] = {
-                roomId: room.roomId,
-              };
-            });
-
-            return serviceRooms;
-          };
-
+          //TODO: сделать рассылку мэнэджерам для диалогов при коннекте
           const serviceMsg = {
             ...parsedMsg,
             service: {
@@ -136,14 +118,13 @@ app.ws('/', (ws: WebSocketExtended) => {
                 .map((client) => client.name)
                 .join(' '),
               rooms: createServiceRooms(rooms),
+              messages: rooms[roomId].messages,
             },
           };
 
-          sendMessageRoom(serviceMsg, roomId);
+          sendMessageRoom(serviceMsg);
 
           if (ws.name !== 'manager') {
-            console.log(typeof secondName, 'notificate');
-
             notificateManagers(roomId, name, secondName);
           }
 
@@ -152,9 +133,8 @@ app.ws('/', (ws: WebSocketExtended) => {
 
         case 'chat': {
           console.log('chat');
-          const roomId = parsedMsg.roomId;
-
-          sendMessageRoom(parsedMsg, roomId);
+          saveMessageRoom(parsedMsg);
+          sendMessageRoom(parsedMsg);
           break;
         }
 
@@ -168,7 +148,6 @@ app.ws('/', (ws: WebSocketExtended) => {
   });
 
   ws.on('close', () => {
-    // console.log(ws);
     const roomId = ws.roomId;
     if (rooms[roomId]) {
       rooms[roomId].clients = rooms[roomId].clients.filter(
@@ -178,7 +157,28 @@ app.ws('/', (ws: WebSocketExtended) => {
   });
 });
 
-const sendMessageRoom = (msg: WebSocketMessage, roomId: roomId) => {
+const createServiceRooms = (roomObj: rooms) => {
+  const serviceRooms: { [roomId: string]: serviceRoom } = {};
+
+  Object.values(roomObj).forEach((room: room) => {
+    serviceRooms[room.roomId] = {
+      roomId: room.roomId,
+    };
+  });
+
+  return serviceRooms;
+};
+
+const saveMessageRoom = (msg: WebSocketMessage) => {
+  const roomId = msg.roomId;
+  if (rooms[roomId]) {
+    rooms[roomId].messages.push(msg);
+    console.log(rooms[roomId].messages, 'messages');
+  }
+};
+
+const sendMessageRoom = (msg: WebSocketMessage) => {
+  const roomId = msg.roomId;
   if (rooms[roomId]) {
     rooms[roomId].clients.forEach((client) => {
       console.log('send message', msg);
@@ -187,17 +187,26 @@ const sendMessageRoom = (msg: WebSocketMessage, roomId: roomId) => {
   }
 };
 
+const getLastMessage = (roomId: roomId) => {
+  if (rooms[roomId].messages) {
+    return rooms[roomId].messages[rooms[roomId].messages.length - 1]?.message;
+  }
+
+  return '';
+};
+
 const notificateManagers = (
   roomId: roomId,
   name: string,
-  secondName: string
+  secondName?: string
 ) => {
   const msg: WebSocketMessage = {
     method: 'broadcastRoom',
     roomId,
     secondName,
     name,
-    id: Date.now(),
+    messageId: Date.now(),
+    message: getLastMessage(roomId),
   };
 
   Object.values(rooms)?.forEach((room) => {

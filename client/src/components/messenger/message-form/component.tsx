@@ -4,7 +4,7 @@ import { useState } from "react"
 import Tg from "../../../assets/icons/tg.svg?react"
 
 interface MessageFormProps {
-  sendMessage: (method: "connection" | "chat", message: string) => void
+  sendMessage: (method: "chat", message: string) => void
 }
 
 const MessageForm = ({ sendMessage }: MessageFormProps) => {
