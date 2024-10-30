@@ -1,6 +1,6 @@
 import styles from "./style.module.scss"
 import type { chat, loginFormState } from "../component"
-import { useEffect, useRef } from "react"
+import { memo, useEffect, useRef } from "react"
 import Message from "./message/component"
 
 interface ChatProps {
@@ -8,7 +8,7 @@ interface ChatProps {
   login: loginFormState
 }
 
-const Chat = ({ chat, login }: ChatProps) => {
+const Chat = memo(function Chat({ chat, login }: ChatProps) {
   const windowRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -29,6 +29,6 @@ const Chat = ({ chat, login }: ChatProps) => {
       ))}
     </div>
   )
-}
+})
 
 export default Chat
