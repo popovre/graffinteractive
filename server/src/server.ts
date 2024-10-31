@@ -125,13 +125,6 @@ app.ws('/', (ws: WebSocketExtended) => {
 
           rooms[roomId].clients.push(ws);
 
-          // sendMessageRoom(serviceMsg);
-          // notificateRoom(parsedMsg);
-
-          // if (ws.name !== 'manager') {
-          //   notificateManagers(roomId, name, secondName);
-          // }
-
           broadcast(parsedMsg);
 
           break;
@@ -141,6 +134,7 @@ app.ws('/', (ws: WebSocketExtended) => {
           console.log('chat');
           saveMessageRoom(parsedMsg);
           sendMessageRoom(parsedMsg);
+          notificateManagers('broadcastRoom', true, roomId, name, secondName);
           break;
         }
 
@@ -204,7 +198,6 @@ const getLastMessage = (roomId: roomId) => {
 };
 
 const broadcast = (msg: WebSocketMessage) => {
-  //TODO: сделать рассылку мэнэджерам для диалогов при коннекте
   const { roomId, name, secondName } = msg;
 
   const serviceMsg = {
@@ -218,7 +211,7 @@ const broadcast = (msg: WebSocketMessage) => {
   notificateRoom(serviceMsg);
 
   if (name !== 'manager') {
-    notificateManagers(roomId, name, secondName);
+    notificateManagers('broadcastRoom', false, roomId, name, secondName);
   }
 };
 
@@ -236,12 +229,14 @@ const notificateRoom = (serviceMsg: WebSocketMessage) => {
 };
 
 const notificateManagers = (
+  method: messageMethod,
+  all: boolean,
   roomId: roomId,
   name: string,
   secondName?: string
 ) => {
   const msg: WebSocketMessage = {
-    method: 'broadcastRoom',
+    method,
     roomId,
     secondName,
     name,
@@ -250,12 +245,20 @@ const notificateManagers = (
   };
 
   Object.values(rooms)?.forEach((room) => {
-    if (room.roomId !== roomId) {
+    if (all) {
       room?.clients.forEach((client: WebSocketExtended) => {
         if (client.name === 'manager') {
           client?.send(JSON.stringify(msg));
         }
       });
+    } else {
+      if (room.roomId !== roomId) {
+        room?.clients.forEach((client: WebSocketExtended) => {
+          if (client.name === 'manager') {
+            client?.send(JSON.stringify(msg));
+          }
+        });
+      }
     }
   });
 };
