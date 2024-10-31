@@ -205,7 +205,7 @@ const getLastMessage = (roomId: roomId) => {
 
 const broadcast = (msg: WebSocketMessage) => {
   //TODO: сделать рассылку мэнэджерам для диалогов при коннекте
-  const roomId = msg.roomId;
+  const { roomId, name, secondName } = msg;
 
   const serviceMsg = {
     ...msg,
@@ -216,6 +216,10 @@ const broadcast = (msg: WebSocketMessage) => {
   };
 
   notificateRoom(serviceMsg);
+
+  if (name !== 'manager') {
+    notificateManagers(roomId, name, secondName);
+  }
 };
 
 const notificateRoom = (serviceMsg: WebSocketMessage) => {
@@ -231,29 +235,29 @@ const notificateRoom = (serviceMsg: WebSocketMessage) => {
   }
 };
 
-// const notificateManagers = (
-//   roomId: roomId,
-//   name: string,
-//   secondName?: string
-// ) => {
-//   const msg: WebSocketMessage = {
-//     method: 'broadcastRoom',
-//     roomId,
-//     secondName,
-//     name,
-//     messageId: Date.now(),
-//     message: getLastMessage(roomId),
-//   };
+const notificateManagers = (
+  roomId: roomId,
+  name: string,
+  secondName?: string
+) => {
+  const msg: WebSocketMessage = {
+    method: 'broadcastRoom',
+    roomId,
+    secondName,
+    name,
+    messageId: Date.now(),
+    message: getLastMessage(roomId),
+  };
 
-//   Object.values(rooms)?.forEach((room) => {
-//     if (room.roomId !== roomId) {
-//       room?.clients.forEach((client: WebSocketExtended) => {
-//         if (client.name === 'manager') {
-//           client?.send(JSON.stringify(msg));
-//         }
-//       });
-//     }
-//   });
-// };
+  Object.values(rooms)?.forEach((room) => {
+    if (room.roomId !== roomId) {
+      room?.clients.forEach((client: WebSocketExtended) => {
+        if (client.name === 'manager') {
+          client?.send(JSON.stringify(msg));
+        }
+      });
+    }
+  });
+};
 
 app.listen(PORT, 'localhost', listenHandler);
