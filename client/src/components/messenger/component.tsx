@@ -18,6 +18,7 @@ type messageMethod = "broadcastRoom" | `connection` | `chat`
 
 interface serviceRoom {
   roomId: string
+  name: string
 }
 
 interface service {
@@ -114,9 +115,9 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
 
       socketRef.current.onmessage = evt => {
         const parsedMsg: WebSocketMessage = JSON.parse(evt.data)
-        console.log(parsedMsg, "parsedMsg")
         switch (parsedMsg.method) {
           case "connection": {
+            console.log(parsedMsg, "connection")
             parsedMsg.service?.messages
               ? setChat(parsedMsg.service?.messages)
               : setChat([])
@@ -126,15 +127,23 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
               contact: parsedMsg.service
                 ? parsedMsg.service.roomClients
                     .split(" ")
-                    .filter(name => {
-                      return parsedMsg.roomId !== "manager"
-                        ? name !== login.name
-                        : name
+                    .filter((name, ind, array) => {
+                      return parsedMsg.roomId === "manager"
+                        ? array.indexOf(name) === ind
+                          ? name
+                          : false
+                        : name !== login.name
                     })
-                    .join(" ")
+                    .join(", ")
                 : "",
             }))
-            parsedMsg.service ? setRooms(parsedMsg.service.rooms) : setRooms({})
+
+            if (parsedMsg.service?.rooms) {
+              setRooms(parsedMsg.service.rooms)
+            } else {
+              setRooms({})
+            }
+
             break
           }
           case "broadcastRoom": {

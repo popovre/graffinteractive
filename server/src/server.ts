@@ -46,8 +46,9 @@ const listenHandler: ListenCallback = (err?: Error) => {
 app.use(express.json());
 
 interface service {
-  rooms: { [roomId: string]: serviceRoom };
+  rooms?: { [roomId: string]: serviceRoom };
   roomClients: string;
+  messages: WebSocketMessage[];
 }
 
 export interface WebSocketMessage {
@@ -71,14 +72,23 @@ export type roomId = string;
 
 type messageMethod = 'broadcastRoom' | `connection` | `chat`;
 
+interface creator {
+  name: string;
+  secondName?: string;
+}
+
 interface room {
   clients: WebSocketExtended[];
   messages: WebSocketMessage[];
   roomId: string;
+  creator: creator;
 }
 
 interface serviceRoom {
   roomId: string;
+  name: string;
+  secondName?: string;
+  message?: string;
 }
 
 export interface rooms {
@@ -104,29 +114,25 @@ app.ws('/', (ws: WebSocketExtended) => {
           if (!rooms[roomId]) {
             rooms[roomId] = {
               roomId,
+              creator: {
+                name: name,
+                secondName: secondName,
+              },
               clients: [],
               messages: [],
             };
           }
 
           rooms[roomId].clients.push(ws);
-          //TODO: сделать рассылку мэнэджерам для диалогов при коннекте
-          const serviceMsg = {
-            ...parsedMsg,
-            service: {
-              roomClients: rooms[roomId].clients
-                .map((client) => client.name)
-                .join(' '),
-              rooms: createServiceRooms(rooms),
-              messages: rooms[roomId].messages,
-            },
-          };
 
-          sendMessageRoom(serviceMsg);
+          // sendMessageRoom(serviceMsg);
+          // notificateRoom(parsedMsg);
 
-          if (ws.name !== 'manager') {
-            notificateManagers(roomId, name, secondName);
-          }
+          // if (ws.name !== 'manager') {
+          //   notificateManagers(roomId, name, secondName);
+          // }
+
+          broadcast(parsedMsg);
 
           break;
         }
@@ -163,6 +169,9 @@ const createServiceRooms = (roomObj: rooms) => {
   Object.values(roomObj).forEach((room: room) => {
     serviceRooms[room.roomId] = {
       roomId: room.roomId,
+      name: room.creator.name,
+      secondName: room.creator.secondName,
+      message: getLastMessage(room.roomId),
     };
   });
 
@@ -191,31 +200,60 @@ const getLastMessage = (roomId: roomId) => {
   if (rooms[roomId].messages) {
     return rooms[roomId].messages[rooms[roomId].messages.length - 1]?.message;
   }
-
   return '';
 };
 
-const notificateManagers = (
-  roomId: roomId,
-  name: string,
-  secondName?: string
-) => {
-  const msg: WebSocketMessage = {
-    method: 'broadcastRoom',
-    roomId,
-    secondName,
-    name,
-    messageId: Date.now(),
-    message: getLastMessage(roomId),
+const broadcast = (msg: WebSocketMessage) => {
+  //TODO: сделать рассылку мэнэджерам для диалогов при коннекте
+  const roomId = msg.roomId;
+
+  const serviceMsg = {
+    ...msg,
+    service: {
+      roomClients: rooms[roomId].clients.map((client) => client.name).join(' '),
+      messages: rooms[roomId].messages,
+    } as service,
   };
 
-  Object.values(rooms)?.forEach((room) => {
-    room?.clients.forEach((client: WebSocketExtended) => {
-      if (client.name === 'manager') {
-        client?.send(JSON.stringify(msg));
-      }
-    });
-  });
+  notificateRoom(serviceMsg);
 };
+
+const notificateRoom = (serviceMsg: WebSocketMessage) => {
+  const roomId = serviceMsg.roomId;
+
+  if (rooms[roomId]) {
+    rooms[roomId].clients.forEach((client) => {
+      if (client.name === 'manager' && serviceMsg.service) {
+        serviceMsg.service.rooms = createServiceRooms(rooms);
+      }
+      client.send(JSON.stringify(serviceMsg));
+    });
+  }
+};
+
+// const notificateManagers = (
+//   roomId: roomId,
+//   name: string,
+//   secondName?: string
+// ) => {
+//   const msg: WebSocketMessage = {
+//     method: 'broadcastRoom',
+//     roomId,
+//     secondName,
+//     name,
+//     messageId: Date.now(),
+//     message: getLastMessage(roomId),
+//   };
+
+//   Object.values(rooms)?.forEach((room) => {
+//     if (room.roomId !== roomId) {
+//       room?.clients.forEach((client: WebSocketExtended) => {
+//         if (client.name === 'manager') {
+//           client?.send(JSON.stringify(msg));
+//         }
+//       });
+//     }
+//   });
+// };
 
 app.listen(PORT, 'localhost', listenHandler);
