@@ -1,0 +1,26 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-block: var(--mobile-padding-block);
+  @include content;
+}
+
+.nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.link {
+  padding: 0;
+  background-color: var(--asc-text-success);
+}
+
+.button {
+  background-color: var(--asc-text-success);
+  &:disabled {
+    opacity: 0.3;
+  }
+}
