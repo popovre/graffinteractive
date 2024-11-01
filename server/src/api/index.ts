@@ -5,7 +5,6 @@ import { reply, getByIndex } from './utils';
 const router = require('express').Router();
 
 router.get('/slides', (req: Request, res: Response, next: NextFunction) => {
-  console.log('request');
   reply(res, slides);
 });
 

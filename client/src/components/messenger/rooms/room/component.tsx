@@ -18,9 +18,8 @@ const Room = ({ room, login, setLogin }: DialogProps) => {
 
   return (
     <div
-      className={styles.root}
+      className={`${styles.root} ${roomId === login.password && styles.active}`}
       onClick={() => {
-        console.log("click")
         setLogin({
           name: login.name,
           secondName: login.secondName,

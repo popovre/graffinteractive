@@ -121,7 +121,6 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
         const parsedMsg: WebSocketMessage = JSON.parse(evt.data)
         switch (parsedMsg.method) {
           case "connection": {
-            console.log(parsedMsg, "connection")
             parsedMsg.service?.messages
               ? setChat(parsedMsg.service?.messages)
               : setChat([])
@@ -151,8 +150,6 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
             break
           }
           case "notifyManagers": {
-            console.log("notifyManagers", parsedMsg)
-
             setRooms((prev: rooms) => ({
               ...prev,
               [parsedMsg.roomId]: {
@@ -165,8 +162,6 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
             break
           }
           case "updateLastMessage": {
-            console.log("updateLastMessage", parsedMsg)
-
             setRooms((prev: rooms) => ({
               ...prev,
               [parsedMsg.roomId]: {
@@ -189,13 +184,9 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
           ...prev,
           connected: false,
         }))
-
-        console.log("ws close")
       }
 
-      socketRef.current.onerror = () => {
-        console.log("ws error")
-      }
+      socketRef.current.onerror = () => {}
     }
     return () => {
       socketRef.current?.close()
