@@ -14,7 +14,11 @@ export interface MessengerProps<status> {
   userStatus: status
 }
 
-type messageMethod = "broadcastRoom" | `connection` | `chat`
+type messageMethod =
+  | "notifyManagers"
+  | `connection`
+  | `chat`
+  | "updateLastMessage"
 
 interface serviceRoom {
   roomId: string
@@ -146,8 +150,9 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
 
             break
           }
-          case "broadcastRoom": {
-            console.log("broadcastRoom", parsedMsg)
+          case "notifyManagers": {
+            console.log("notifyManagers", parsedMsg)
+
             setRooms((prev: rooms) => ({
               ...prev,
               [parsedMsg.roomId]: {
@@ -159,8 +164,21 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
             }))
             break
           }
+          case "updateLastMessage": {
+            console.log("updateLastMessage", parsedMsg)
+
+            setRooms((prev: rooms) => ({
+              ...prev,
+              [parsedMsg.roomId]: {
+                ...prev[parsedMsg.roomId],
+                message: parsedMsg.message,
+              },
+            }))
+            break
+          }
           case "chat": {
             setChat(prev => [...prev, parsedMsg])
+
             break
           }
         }

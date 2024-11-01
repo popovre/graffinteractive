@@ -70,7 +70,11 @@ interface WebSocketExtended extends WebSocket {
 
 export type roomId = string;
 
-type messageMethod = 'broadcastRoom' | `connection` | `chat`;
+type messageMethod =
+  | 'notifyManagers'
+  | `connection`
+  | `chat`
+  | 'updateLastMessage';
 
 interface creator {
   name: string;
@@ -134,7 +138,12 @@ app.ws('/', (ws: WebSocketExtended) => {
           console.log('chat');
           saveMessageRoom(parsedMsg);
           sendMessageRoom(parsedMsg);
-          notificateManagers('broadcastRoom', true, roomId, name, secondName);
+
+          notificateManagers(
+            { ...parsedMsg, method: 'updateLastMessage' },
+            true
+          );
+
           break;
         }
 
@@ -211,7 +220,16 @@ const broadcast = (msg: WebSocketMessage) => {
   notificateRoom(serviceMsg);
 
   if (name !== 'manager') {
-    notificateManagers('broadcastRoom', false, roomId, name, secondName);
+    const msg: WebSocketMessage = {
+      method: 'notifyManagers',
+      roomId,
+      secondName,
+      name,
+      messageId: Date.now(),
+      message: getLastMessage(roomId),
+    };
+
+    notificateManagers(msg, false);
   }
 };
 
@@ -228,36 +246,26 @@ const notificateRoom = (serviceMsg: WebSocketMessage) => {
   }
 };
 
-const notificateManagers = (
-  method: messageMethod,
-  all: boolean,
-  roomId: roomId,
-  name: string,
-  secondName?: string
-) => {
-  const msg: WebSocketMessage = {
-    method,
-    roomId,
-    secondName,
-    name,
-    messageId: Date.now(),
-    message: getLastMessage(roomId),
-  };
+const notificateManagers = (msg: WebSocketMessage, all: boolean) => {
+  const roomId = msg.roomId;
 
   Object.values(rooms)?.forEach((room) => {
-    if (all) {
-      room?.clients.forEach((client: WebSocketExtended) => {
-        if (client.name === 'manager') {
-          client?.send(JSON.stringify(msg));
-        }
-      });
-    } else {
-      if (room.roomId !== roomId) {
+    switch (all) {
+      case true: {
         room?.clients.forEach((client: WebSocketExtended) => {
           if (client.name === 'manager') {
             client?.send(JSON.stringify(msg));
           }
         });
+      }
+      case false: {
+        if (room.roomId !== roomId) {
+          room?.clients.forEach((client: WebSocketExtended) => {
+            if (client.name === 'manager') {
+              client?.send(JSON.stringify(msg));
+            }
+          });
+        }
       }
     }
   });
