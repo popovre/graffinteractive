@@ -10,7 +10,15 @@
   font-size: 14px;
 
   &:hover {
-    background-color: var(--asc-hovered-field);
+    background-color: var(--asc-bg-room);
+
+    .message {
+      color: var(--asc-text-emphasis);
+    }
+
+    .name {
+      color: var(--asc-text);
+    }
   }
 
   & span {

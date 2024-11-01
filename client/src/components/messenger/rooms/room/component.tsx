@@ -28,7 +28,7 @@ const Room = ({ room, login, setLogin }: DialogProps) => {
         })
       }}
     >
-      <p className={styles.name}>{name}</p>
+      <p className={styles.name}>{name[0].toUpperCase() + name.slice(1)}</p>
       <p className={styles.message}>{message}</p>
       <span>{getInitials(name, secondName)}</span>
     </div>
