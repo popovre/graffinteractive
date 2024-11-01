@@ -41,7 +41,6 @@ const listenHandler: ListenCallback = (err?: Error) => {
 };
 
 // make WSS endpoints
-// const Wss = expressWs.getWss();
 
 app.use(express.json());
 
