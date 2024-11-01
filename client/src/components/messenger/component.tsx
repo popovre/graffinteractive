@@ -150,7 +150,6 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
             break
           }
           case "notifyManagers": {
-
             setRooms((prev: rooms) => ({
               ...prev,
               [parsedMsg.roomId]: {
@@ -163,8 +162,6 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
             break
           }
           case "updateLastMessage": {
-            console.log("updateLastMessage", parsedMsg)
-
             setRooms((prev: rooms) => ({
               ...prev,
               [parsedMsg.roomId]: {
@@ -187,13 +184,9 @@ const Messenger = ({ userStatus }: MessengerProps<userStatus>) => {
           ...prev,
           connected: false,
         }))
-
-        console.log("ws close")
       }
 
-      socketRef.current.onerror = () => {
-        console.log("ws error")
-      }
+      socketRef.current.onerror = () => {}
     }
     return () => {
       socketRef.current?.close()

@@ -109,8 +109,6 @@ app.ws('/', (ws: WebSocketExtended) => {
 
       switch (method) {
         case 'connection': {
-          console.log('connection', parsedMsg);
-
           ws.id = socketId;
           ws.roomId = roomId;
           ws.name = name;
@@ -135,7 +133,6 @@ app.ws('/', (ws: WebSocketExtended) => {
         }
 
         case 'chat': {
-          console.log('chat');
           saveMessageRoom(parsedMsg);
           sendMessageRoom(parsedMsg);
 
@@ -148,7 +145,6 @@ app.ws('/', (ws: WebSocketExtended) => {
         }
 
         default: {
-          console.log('default case');
         }
       }
     } else {
@@ -185,7 +181,6 @@ const saveMessageRoom = (msg: WebSocketMessage) => {
   const roomId = msg.roomId;
   if (rooms[roomId]) {
     rooms[roomId].messages.push(msg);
-    console.log(rooms[roomId].messages, 'messages');
   }
 };
 
@@ -193,7 +188,6 @@ const sendMessageRoom = (msg: WebSocketMessage) => {
   const roomId = msg.roomId;
   if (rooms[roomId]) {
     rooms[roomId].clients.forEach((client) => {
-      console.log('send message', msg);
       client.send(JSON.stringify(msg));
     });
   }
